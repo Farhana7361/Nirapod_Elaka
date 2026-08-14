@@ -56,7 +56,7 @@ export default function Landing() {
             <div className="icon-badge amber">
               <Edit3 size={22} color="#e0a340" />
             </div>
-            <h3>Anonymous Reporting</h3>
+            <h3>Reporting</h3>
             <p>File a report with a single click. Your identity is stored privately — the public only sees the safety data.</p>
           </Link>
 
