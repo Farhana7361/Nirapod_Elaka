@@ -5,6 +5,8 @@ import Map from './pages/Map.jsx';
 import Community from './pages/Community.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
+import MyReports from './pages/MyReports.jsx';
+import Profile from './pages/Profile.jsx';
 import Footer from './components/Footer.jsx';
 
 export default function App() {
