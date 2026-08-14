@@ -28,10 +28,10 @@ export default function Landing() {
       </p>
 
       <div className="flex flex-wrap gap-3">
-        <Link to="/register" className="btn btn-primary">
+        <Link to="/login" className="btn btn-primary">
           Get Started — It's Free →
         </Link>
-        <Link to="/map" className="btn btn-ghost">
+        <Link to="/map" className="btn btn-outline">
           Explore the Live Map
         </Link>
       </div>
@@ -229,7 +229,7 @@ export default function Landing() {
         </div>
       </div>
 
-      <Link to="/register" className="btn btn-primary mt-6">
+      <Link to="/signup" className="btn btn-primary mt-6">
         Start Reporting →
       </Link>
     </div>

@@ -8,11 +8,13 @@ export default function Navbar() {
   <NavLink to="/" className="text-xl font-bold">Nirapod Elaka</NavLink>
 </div>
       <div className="flex gap-2">
-        <NavLink to="/" className="btn btn-ghost">Home</NavLink>
         <NavLink to="/map" className="btn btn-ghost">Map</NavLink>
         <NavLink to="/community" className="btn btn-ghost">Community</NavLink>
-        <NavLink to="/login" className="btn btn-ghost">Log in</NavLink>
-        <NavLink to="/signup" className="btn btn-primary">Sign up</NavLink>
+        <NavLink to="/myreports" className="btn btn-ghost">My Reports</NavLink>
+        <NavLink to="/profile" className="btn btn-primary">Profile</NavLink>
+        <button className="btn btn-ghost">Log Out</button>
+        
+
       </div>
     </nav>
   );
