@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { MapPin, Edit3, Sliders, BarChart3, ShieldCheck, User } from 'lucide-react';
+import { MapPin, Edit3, SlidersHorizontal, ChartNoAxesColumn, BadgeCheck, User } from 'lucide-react';
 import './Landing.css';
 export default function Landing() {
   return (
@@ -62,7 +62,7 @@ export default function Landing() {
 
             <Link to=""  className="feature-card hover-violet">
             <div className="icon-badge violet">
-              <Sliders size={22} color="#8b7af5" />
+              <SlidersHorizontal size={22} color="#8b7af5" />
             </div>
             <h3>Smart Filters</h3>
             <p>Filter by time of day (morning, afternoon, night) and incident type to find exactly the data you care about.</p>
@@ -71,7 +71,7 @@ export default function Landing() {
 
            <Link to=""  className="feature-card hover-sky">
             <div className="icon-badge sky">
-              <BarChart3 size={22} color="#60a5fa" />
+              <ChartNoAxesColumn size={22} color="#60a5fa" />
             </div>
             <h3>Community Impact</h3>
             <p>Public stats page shows total reports, contributors, average safety ratings, incident breakdowns, and top flagged zones.</p>
@@ -79,7 +79,7 @@ export default function Landing() {
 
           <Link to=""  className="feature-card hover-rose">
             <div className="icon-badge rose">
-              <ShieldCheck size={22} color="#f45e5e" />
+              <BadgeCheck size={22} color="#f45e5e" />
             </div>
             <h3>Community Moderation</h3>
             <p>Users can flag false or misleading reports. Admins review a queue to keep the data clean and trustworthy.</p>
@@ -95,12 +95,7 @@ export default function Landing() {
     </div>
   
   </section>
-
-    </div>
-
   
+    </div>  
   );
-  
-  
-
 }
