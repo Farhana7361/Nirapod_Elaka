@@ -10,7 +10,7 @@ export default function Login() {
     const form = e.target;
 
     if (form.checkValidity()) {
-      window.location.href = "/map"; 
+      window.location.href = "/profile"; 
     } else {
       form.reportValidity();
     }
