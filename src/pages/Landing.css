@@ -318,17 +318,33 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
+
+  /* IMPORTANT */
+  background: transparent !important;
 }
 
 .scale-title span {
   font-size: 13px;
   font-weight: 500;
-  color: #9aa0b0;
+  color: #f5f6fa !important;
+  background: transparent !important;
 }
 
-.scale-title.safe { color: #3ecf8e; }
-.scale-title.caution { color: #f5a623; }
-.scale-title.danger { color: #ef4f4f; }
+/* Safety title colors */
+.scale-title.safe {
+  color: #3ecf8e !important;
+  background: transparent !important;
+}
+
+.scale-title.caution {
+  color: #f5a623 !important;
+  background: transparent !important;
+}
+
+.scale-title.danger {
+  color: #ef4f4f !important;
+  background: transparent !important;
+}
 
 .scale-card p {
   color: #9aa0b0;
