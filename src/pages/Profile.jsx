@@ -183,20 +183,20 @@ body {
                 color:var(--ink-soft);
                 }
                 .pill{
-                  font-family:'IBM Plex Mono', monospace;
-                  font-size:10px; letter-spacing:.04em;
-                  padding:4px 9px; border-radius:999px;
-                  white-space:nowrap; flex-shrink:0;
-                  }
-                  .pill.review{ background:var(--gold-tint); color:#eab15b; }
-                  .pill.resolved{ background:#E1F0E5; color:#2B6B44; }
-                  .pill.pending{ background:#EDEEEB; color:#5B655F; }
-                  .report-meta{
-                    font-size:12px; color:var(--ink-soft);
-                    display:flex; gap:14px; flex-wrap:wrap;
-                    }
-                    .report-meta span{ display:inline-flex; align-items:center; gap:5px; }
-                    .report{
+                font-family:'IBM Plex Mono', monospace;
+                font-size:10px; letter-spacing:.04em;
+                padding:4px 9px; border-radius:999px;
+                white-space:nowrap; flex-shrink:0;
+                }
+                .pill.review{ background:var(--gold-tint); color:#eab15b; }
+                .pill.resolved{ background:#E1F0E5; color:#2B6B44; }
+                .pill.pending{ background:#EDEEEB; color:#5B655F; }
+                .report-meta{
+                font-size:12px; color:var(--ink-soft);
+                display:flex; gap:14px; flex-wrap:wrap;
+                }
+                .report-meta span{ display:inline-flex; align-items:center; gap:5px; }
+                .report{
 
 
       `}</style>
