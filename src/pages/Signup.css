@@ -60,14 +60,10 @@
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-
-
 .signup-step-icon.active {
   background: #f2a93b;
   border-color: #f2a93b;
 }
-
-
 
 .signup-step-track {
   flex: 1;

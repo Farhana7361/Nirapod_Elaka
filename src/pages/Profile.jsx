@@ -163,6 +163,40 @@ body {
           white-space: nowrap;
           transition: background .15s ease, transform .1s ease;
         }
+             .report-list{ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px; }
+
+             border:1px solid var(--line);
+             border-left:3px solid var(--gold);
+             border-radius:11px;
+             padding:13px 14px;
+             display:flex; flex-direction:column; gap:6px;
+             background:#171e2c;
+             }
+             .report.resolved{ border-left-color:#3F8F5F; }
+             .report.pending{ border-left-color:#9AA79E; }
+             .report-top{
+              display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+              }
+              .report-title{ font-size:14.5px; font-weight:600; color:var(--ink); }
+              .report-id{
+                font-family:'IBM Plex Mono', monospace; font-size:10.5px;
+                color:var(--ink-soft);
+                }
+                .pill{
+                  font-family:'IBM Plex Mono', monospace;
+                  font-size:10px; letter-spacing:.04em;
+                  padding:4px 9px; border-radius:999px;
+                  white-space:nowrap; flex-shrink:0;
+                  }
+                  .pill.review{ background:var(--gold-tint); color:#eab15b; }
+                  .pill.resolved{ background:#E1F0E5; color:#2B6B44; }
+                  .pill.pending{ background:#EDEEEB; color:#5B655F; }
+                  .report-meta{
+                    font-size:12px; color:var(--ink-soft);
+                    display:flex; gap:14px; flex-wrap:wrap;
+                    }
+                    .report-meta span{ display:inline-flex; align-items:center; gap:5px; }
+                    .report{
 
 
       `}</style>
@@ -202,6 +236,20 @@ body {
           <div className="panel-head">
             <h2 id="report-head">My Report</h2>
           </div>
+          <div class="report-list">
+      <div class="report review">
+        <div class="report-top">
+          <span class="report-title">Broken streetlight, Road 7</span>
+          <span class="pill review">Under review</span>
+        </div>
+        <div class="report-meta">
+          <span class="report-id">#NE-1042</span>
+          <span>Filed 3 Aug 2026</span>
+          <span>Dhanmondi</span>
+        </div>
+      </div>
+      </div>
+          
         </section>
       </div>
     </>
