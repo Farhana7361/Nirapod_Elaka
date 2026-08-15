@@ -5,7 +5,7 @@ import './Landing.css';
 export default function Landing() {
   return (
     <div>
-      {/* HERO SECTION */}
+      {/* Hero Section */}
 <section className="relative px-6 pt-20 pb-24 lg:pt-28 lg:pb-32">
   <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
 
@@ -37,7 +37,7 @@ export default function Landing() {
       </div>
     </div>
 
-    {/* RIGHT: live map mockup */}
+    {/* RIGHT: live map mock*/}
     <div className="relative">
       {/* decorative floating pins */}
       <MapPin
