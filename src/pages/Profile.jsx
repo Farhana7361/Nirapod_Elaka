@@ -113,9 +113,7 @@ body {
           border-top: 1px solid var(--line);
         }
 
-        .field:first-of-type {
-          border-top: none;
-        }
+        
 
         .field-label {
           font-size: 11px;
@@ -165,6 +163,7 @@ body {
         }
              .report-list{ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px; }
 
+             .report{
              border:1px solid var(--line);
              border-left:3px solid var(--gold);
              border-radius:11px;
@@ -172,8 +171,7 @@ body {
              display:flex; flex-direction:column; gap:6px;
              background:#171e2c;
              }
-             .report.resolved{ border-left-color:#3F8F5F; }
-             .report.pending{ border-left-color:#9AA79E; }
+             
              .report-top{
               display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
               }
@@ -182,21 +180,27 @@ body {
                 font-family:'IBM Plex Mono', monospace; font-size:10.5px;
                 color:var(--ink-soft);
                 }
-                .pill{
-                font-family:'IBM Plex Mono', monospace;
-                font-size:10px; letter-spacing:.04em;
-                padding:4px 9px; border-radius:999px;
-                white-space:nowrap; flex-shrink:0;
-                }
-                .pill.review{ background:var(--gold-tint); color:#eab15b; }
-                .pill.resolved{ background:#E1F0E5; color:#2B6B44; }
-                .pill.pending{ background:#EDEEEB; color:#5B655F; }
-                .report-meta{
-                font-size:12px; color:var(--ink-soft);
-                display:flex; gap:14px; flex-wrap:wrap;
-                }
-                .report-meta span{ display:inline-flex; align-items:center; gap:5px; }
-                .report{
+                
+                .pill.review{
+                  font-family:'IBM Plex Mono', monospace;
+                  font-size:10px; letter-spacing:.04em;
+                  padding:4px 9px; border-radius:999px;
+                  white-space:nowrap; flex-shrink:0;
+                  background:var(--gold-tint); color:#eab15b; 
+                  }
+                  
+                  
+                  
+                  
+                  .report-meta{
+                    font-size:12px; color:var(--ink-soft);
+                    display:flex; gap:14px; flex-wrap:wrap;
+                    }
+                    .report-meta span{ display:inline-flex; align-items:center; gap:5px; }
+                    
+                    
+                    
+                    
 
 
       `}</style>
