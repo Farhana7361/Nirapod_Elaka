@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { 
-  User, Lock, MapPin, Check} from "lucide-react";
+  User, Lock, MapPin, Check,CircleCheck} from "lucide-react";
 
 import "./Signup.css";
 
@@ -56,7 +56,7 @@ export default function Signup() {
 
   const nextStep = () => {
     if (!validate()) {
-      alert("Please check your inputs.");
+      
       return;
     }
     if (step < 3) {
@@ -114,7 +114,8 @@ export default function Signup() {
           {isSuccess ? (
             <div className="signup-success">
               <div className="ring">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4fd897" strokeWidth="2.4"><path d="M4 12l6 6L20 6" /></svg>
+                 <CircleCheck size={95} />
+                
               </div>
               <h2>You're on the map</h2>
             </div>
