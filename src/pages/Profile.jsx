@@ -241,19 +241,18 @@ body {
             <h2 id="report-head">My Report</h2>
           </div>
           <div class="report-list">
-      <div class="report review">
-        <div class="report-top">
-          <span class="report-title">Broken streetlight, Road 7</span>
-          <span class="pill review">Under review</span>
-        </div>
-        <div class="report-meta">
-          <span class="report-id">#NE-1042</span>
-          <span>Filed 3 Aug 2026</span>
-          <span>Dhanmondi</span>
-        </div>
-      </div>
-      </div>
-          
+            <div class="report review">
+              <div class="report-top">
+                <span class="report-title">Broken streetlight, Road 7</span>
+                <span class="pill review">Under review</span>
+              </div>
+              <div class="report-meta">
+                <span class="report-id">#NE-1042</span>
+                <span>Filed 3 Aug 2026</span>
+                <span>Dhanmondi</span>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </>
