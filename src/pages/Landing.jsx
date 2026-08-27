@@ -9,7 +9,7 @@ export default function Landing() {
 <section className="relative px-6 pt-20 pb-24 lg:pt-28 lg:pb-32">
   <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
 
-    {/* LEFT: copy */}
+    {/* left */}
     <div>
       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#e0a340]/40 bg-[#e0a340]/10 text-[#e0a340] text-xs font-semibold tracking-widest mb-6">
         <span className="w-1.5 h-1.5 rounded-full bg-[#e0a340]" />
@@ -37,9 +37,9 @@ export default function Landing() {
       </div>
     </div>
 
-    {/* RIGHT: live map mock*/}
+    {/* right*/}
     <div className="relative">
-      {/* decorative floating pins */}
+      {/* pins */}
       <MapPin
         className="hidden lg:block absolute -left-8 top-1/2 text-[#34d399]"
         size={28}
@@ -193,7 +193,7 @@ export default function Landing() {
   </div>
 
   <div className="how-it-works-grid">
-    {/* LEFT SIDE: steps */}
+    {/* LEFT steps */}
     <div>
       <div className="step-list">
         <div className="step-item">
@@ -234,7 +234,7 @@ export default function Landing() {
       </Link>
     </div>
 
-    {/* RIGHT SIDE: sample reports card */}
+    {/* RIGHT card */}
     <div className="sample-reports-card">
       <span className="sample-reports-title">SAMPLE REPORTS</span>
 
@@ -328,7 +328,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA SECTION */}
+      {/* LAST SECTION */}
       <section className="cta-section">
         <h2>Your neighbourhood needs your voice.</h2>
         <p>
