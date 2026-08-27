@@ -1,19 +1,59 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { MapPin } from "lucide-react";
+import axios from "axios";
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
 
-    if (form.checkValidity()) {
-      window.location.href = "/profile";
-    } else {
+    if (!form.checkValidity()) {
       form.reportValidity();
+      return;
+    }
+
+    setErrorMsg("");
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password },
+        { timeout: 10000 },
+      );
+
+      // Store the token so future requests can prove who's logged in
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          _id: response.data._id,
+          name: response.data.name,
+          email: response.data.email,
+        }),
+      );
+
+      window.location.href = "/profile";
+    } catch (err) {
+      console.error("Login failed:", err);
+      if (err.response) {
+        setErrorMsg(
+          err.response.data.message || "Login failed. Please try again.",
+        );
+      } else if (err.code === "ERR_NETWORK") {
+        setErrorMsg("Can't reach the server. Is the backend running?");
+      } else {
+        setErrorMsg("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -189,6 +229,8 @@ export default function Login() {
                   placeholder="you@domain.com"
                   required
                   className="custom-input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -204,6 +246,8 @@ export default function Login() {
                   placeholder="Your password"
                   required
                   className="custom-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -220,10 +264,10 @@ export default function Login() {
                 Forgot password?
               </a>
             </div>
-
-            <button type="submit" className="btn-custom-primary">
-              Log in
-            </button>
+        {errorMsg && <div style={{ color: "#f87171", fontSize: "14px", marginBottom: "16px" }}>{errorMsg}</div>}
+      <button type="submit" className="btn-custom-primary" disabled={isLoading}>
+          {isLoading ? "Logging in..." : "Log in"}
+      </button>
           </form>
 
           <div className="signup-prompt">
