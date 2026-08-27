@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-
 import { 
   User, Lock, MapPin, Check,CircleCheck} from "lucide-react";
 
 import "./Signup.css";
+import axios from "axios";
 
 export default function Signup() {
   const [step, setStep] = useState(0);
@@ -21,6 +21,9 @@ export default function Signup() {
     area: "",
     terms: false,
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleInput = (e) => {
     const { name, value, type, checked } = e.target;
@@ -63,7 +66,7 @@ export default function Signup() {
       setDirection("fwd");
       setStep(step + 1);
     } else {
-      setIsSuccess(true);
+      handleSubmit();
     }
   };
 
@@ -71,6 +74,29 @@ export default function Signup() {
     setDirection("back");
     setStep(step - 1);
   };
+  const handleSubmit = async () => {
+    setErrorMsg("");
+    setIsLoading(true);
+
+    try {
+        const response = await axios.post("http://localhost:5000/api/auth/register", {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+        });
+
+        console.log("Registered:", response.data);
+        setIsSuccess(true);
+    } catch (err) {
+        if (err.response) {
+            setErrorMsg(err.response.data.message);
+        } else {
+            setErrorMsg("Something went wrong. Please try again.");
+        }
+    } finally {
+        setIsLoading(false);
+    }
+};
 
   return (
     <div className="signup-wrapper">
@@ -181,6 +207,7 @@ export default function Signup() {
                     <div className="signup-summary-row"><span className="signup-k">AREA</span><span>{formData.area}</span></div>
                   </div>
                   <div className="signup-note"><b>Reports stay anonymous.</b> This info only signs you in.</div>
+                  {errorMsg && <div className="signup-error">{errorMsg}</div>}
                   <label className="signup-terms">
                     <input type="checkbox" name="terms" checked={formData.terms} onChange={handleInput} />
                     <span>I agree to guidelines and understand reports are anonymous.</span>
@@ -192,8 +219,8 @@ export default function Signup() {
                 {step > 0 && (
                   <button type="button" className="signup-btn signup-btn-back" onClick={prevStep}>Back</button>
                 )}
-                <button type="button" className={`signup-btn signup-btn-next ${step === 3 ? 'final' : ''}`} onClick={nextStep}>
-                  {step === 3 ? "Create account" : "Continue"}
+                <button type="button" className={`signup-btn signup-btn-next ${step === 3 ? 'final' : ''}`} onClick={nextStep} disabled={isLoading}>
+                  {isLoading ? "Creating..." : step === 3 ? "Create account" : "Continue"}
                 </button>
               </div>
 
@@ -209,5 +236,3 @@ export default function Signup() {
     </div>
   );
 }
-
-
