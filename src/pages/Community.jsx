@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router';
 export default function Community() {
 
   const reports = [
@@ -349,9 +350,9 @@ export default function Community() {
             decisions.
           </p>
 
-          <button className="px-6 py-3 rounded-lg bg-[#f5a623] text-[#10151f] font-bold hover:opacity-90 transition">
-            Start Reporting →
-          </button>
+          <NavLink to="/login" className="inline-block px-6 py-3 rounded-lg bg-[#f5a623] text-[#10151f] font-bold hover:opacity-90 transition">
+              Start Reporting →
+          </NavLink>
 
         </div>
 
