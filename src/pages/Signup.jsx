@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { 
   User, Lock, MapPin, Check,CircleCheck} from "lucide-react";
 
-import "./Signup.css";
+import "../styles/Signup.css";
 import axios from "axios";
 
 export default function Signup() {

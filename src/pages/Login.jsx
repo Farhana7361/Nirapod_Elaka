@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { MapPin} from "lucide-react";
+import { Link } from "react-router";
+import { MapPin } from "lucide-react";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -10,12 +11,11 @@ export default function Login() {
     const form = e.target;
 
     if (form.checkValidity()) {
-      window.location.href = "/profile"; 
+      window.location.href = "/profile";
     } else {
       form.reportValidity();
     }
   };
-  
 
   return (
     <>
@@ -170,7 +170,7 @@ export default function Login() {
       <div className="login-page">
         <div className="login-card">
           <div className="brand">
-             <MapPin size={20} color="#f2a93b" strokeWidth={2.5} />
+            <MapPin size={20} color="#f2a93b" strokeWidth={2.5} />
             <span>Nirapod Elaka</span>
           </div>
 
@@ -228,7 +228,7 @@ export default function Login() {
 
           <div className="signup-prompt">
             Don't have an account?{" "}
-            <a href="/register" className="signup-link">
+            <a href="/signup" className="signup-link">
               Sign up
             </a>
           </div>
