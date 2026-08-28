@@ -82,7 +82,7 @@ export default function Login() {
           border: 1px solid #2a3040;
           border-radius: 22px;
           padding: 36px 32px 28px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+          
         }
 
         .brand {
