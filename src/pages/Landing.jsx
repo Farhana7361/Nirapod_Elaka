@@ -310,13 +310,13 @@ export default function Landing() {
         <div className="safety-scale-grid">
           <div className="scale-card">
             <MapPin size={20} color="#3ecf8e" />
-            <h3 className="scale-title safe">Safe <span>4–5 ★</span></h3>
+            <h3 className="scale-title safe">Safe <span>4–5 ★★★★</span></h3>
             <p>Well-lit, regularly patrolled, community-confirmed safe zones.</p>
           </div>
 
           <div className="scale-card">
             <MapPin size={20} color="#f5a623" />
-            <h3 className="scale-title caution">Caution <span>2–3 ★</span></h3>
+            <h3 className="scale-title caution">Caution <span>2–3 ★★</span></h3>
             <p>Some reported incidents. Stay alert, especially at night.</p>
           </div>
 
@@ -336,7 +336,7 @@ export default function Landing() {
           Together, we make every elaka nirapod.
         </p>
         <div className="flex gap-3 justify-center">
-          <Link to="/register" className="btn btn-primary">
+          <Link to="/signup" className="btn btn-primary">
             Join the Community →
           </Link>
           <Link to="/map" className="btn btn-ghost">
