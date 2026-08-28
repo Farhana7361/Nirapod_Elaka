@@ -431,10 +431,8 @@ margin: 0 0 0 75px;
                   </span>
                 </div>
                 <div className="field">
-                  <span className="field-label">Date of birth</span>
-                  <span className="field-value">
-                    {user?.dateOfBirth || "Not provided"}
-                  </span>
+                  <span className="field-label">NID</span>
+  <span className="field-value">{user?.identity || "Not provided"}</span>
                 </div>
                 <div className="field" style={{ gridColumn: "1 / -1" }}>
                   <span className="field-label">Email</span>

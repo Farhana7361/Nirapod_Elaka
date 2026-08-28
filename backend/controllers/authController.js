@@ -4,10 +4,10 @@ const User = require("../models/User");
 
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, identity } = req.body;
 
         // 1. Check all fields are provided
-        if (!name || !email || !password) {
+       if (!name || !email || !password || !identity) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
@@ -26,6 +26,7 @@ const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
+            identity,
         });
 
         // 5. Create a login token for this new user
@@ -38,6 +39,7 @@ const registerUser = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            identity: user.identity,
             token,
         });
     } catch (err) {
@@ -75,6 +77,7 @@ const loginUser = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+             identity: user.identity,
             token,
         });
     } catch (err) {

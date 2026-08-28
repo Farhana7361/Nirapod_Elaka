@@ -29,7 +29,7 @@ export default function Login() {
         { timeout: 10000 },
       );
 
-      // Store the token so future requests can prove who's logged in
+      // Store the token 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem(
         "user",
@@ -37,6 +37,7 @@ export default function Login() {
           _id: response.data._id,
           name: response.data.name,
           email: response.data.email,
+          identity: response.data.identity,
         }),
       );
 
@@ -68,7 +69,7 @@ export default function Login() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #0a0c12;
+          background: #10151f;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           padding: 24px;
         }

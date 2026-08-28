@@ -38,12 +38,12 @@ export default function Signup() {
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        navigate("/"); // change to your home route
+        window.location.href = "/";// change to your home route
       }, 2000); // 2 second delay so the user sees the success screen
 
       return () => clearTimeout(timer); // cleanup if component unmounts
     }
-  }, [isSuccess, navigate]);
+  }, [isSuccess]);
   const validate = () => {
     if (step === 0) {
       const validLengths = [10, 13, 17];
@@ -91,10 +91,23 @@ export default function Signup() {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          identity: formData.identity,
         },
       );
 
       console.log("Registered:", response.data);
+
+      // Save token and user in localStorage for auto-login
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          _id: response.data._id,
+          name: response.data.name,
+          email: response.data.email,
+          identity: response.data.identity,
+        }),
+      );
       setIsSuccess(true);
     } catch (err) {
       if (err.response) {
