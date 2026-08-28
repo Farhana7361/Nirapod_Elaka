@@ -4,6 +4,7 @@ import axios from "axios";
 export default function Profile() {
   const [isPwOpen, setIsPwOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [showActualPw, setShowActualPw] = useState(false);
 
   //new pw
   const [passwordData, setPasswordData] = useState({
@@ -338,7 +339,10 @@ margin: 0 0 0 75px;
     cursor:pointer;
   }
 
-
+.pw-row div {
+  display: flex;
+  gap: 8px;
+}
 /* pass change error */
 
         .pw-status { font-size: 13px; margin-top: 10px; font-weight: 500; }
@@ -432,7 +436,9 @@ margin: 0 0 0 75px;
                 </div>
                 <div className="field">
                   <span className="field-label">NID</span>
-  <span className="field-value">{user?.identity || "Not provided"}</span>
+                  <span className="field-value">
+                    {user?.identity || "Not provided"}
+                  </span>
                 </div>
                 <div className="field" style={{ gridColumn: "1 / -1" }}>
                   <span className="field-label">Email</span>
@@ -444,17 +450,30 @@ margin: 0 0 0 75px;
 
               <div className="pw-row">
                 <span className="field-label">Password</span>
-                <span className="pw-dots">••••••••••</span>
-                <button
-                  className="btn-change1"
-                  id="pwToggle"
-                  type="button"
-                  aria-expanded={isPwOpen}
-                  aria-controls="pwPanel"
-                  onClick={() => setIsPwOpen((prev) => !prev)}
-                >
-                  {isPwOpen ? "Close" : "Change"}
-                </button>
+                <span className="pw-dots">
+                  {showActualPw
+                    ? user?.password || "No Password Found"
+                    : "********"}
+                </span>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    className="btn-change1"
+                    type="button"
+                    onClick={() => setShowActualPw(!showActualPw)}
+                  >
+                    {showActualPw ? "Hide" : "Show"}
+                  </button>
+                  <button
+                    className="btn-change1"
+                    id="pwToggle"
+                    type="button"
+                    aria-expanded={isPwOpen}
+                    aria-controls="pwPanel"
+                    onClick={() => setIsPwOpen((prev) => !prev)}
+                  >
+                    {isPwOpen ? "Close" : "Change"}
+                  </button>
+                </div>
               </div>
 
               <div
@@ -511,9 +530,6 @@ margin: 0 0 0 75px;
                     </button>
                   </div>
                 </div>
-
-
-                
 
                 {pwStatus.message && (
                   <div className={`pw-status ${pwStatus.type}`}>
