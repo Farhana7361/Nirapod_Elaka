@@ -1,7 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Shield } from 'lucide-react';
+
 export default function Profile() {
   const [isPwOpen, setIsPwOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
   return (
     <>
       <style>{`
@@ -297,7 +306,7 @@ margin: 0 0 0 75px;
         <div className="layout">
           {/* Left Column / ID Card */}
           <div className="id-card">
-            <p className="id-name">Farhana Rahman</p>
+            <p className="id-name">{user?.name || "Loading..."}</p>
             <p className="id-sub">MEMBER SINCE MAR 2023 · DHAKA</p>
             <div className="id-badge">
               <Shield size={14} />
@@ -329,16 +338,16 @@ margin: 0 0 0 75px;
 
               <div className="field-grid">
                 <div className="field">
-                  <span className="field-label">Full name</span>
-                  <span className="field-value">Farhana Rahman</span>
+                    <span className="field-label">Full name</span>
+                    <span className="field-value">{user?.name || "Loading..."}</span>
                 </div>
                 <div className="field">
                   <span className="field-label">Date of birth</span>
-                  <span className="field-value">21 August 2009</span>
+                  <span className="field-value">{user?.dateOfBirth || "Not provided"}</span>
                 </div>
                 <div className="field" style={{ gridColumn: "1 / -1" }}>
                   <span className="field-label">Email</span>
-                  <span className="field-value mono">farhana.cse@aust.edu</span>
+                  <span className="field-value mono">{user?.email || "Not provided"}</span>
                 </div>
               </div>
 
