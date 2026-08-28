@@ -297,6 +297,7 @@ margin: 0 0 0 75px;
   }
   .pw-panel.open{ display:block; }
   .pw-panel-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  
   @media (max-width:640px){
     .pw-panel-grid{ grid-template-columns:1fr; }
   }

@@ -7,7 +7,7 @@ import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import Profile from './pages/Profile.jsx';
 import Footer from './components/Footer.jsx';
-
+import ForgotPassword from "./pages/ForgotPassword"; 
 export default function App() {
   return (
     <div className="app-shell">
@@ -20,6 +20,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
 
       <Footer />

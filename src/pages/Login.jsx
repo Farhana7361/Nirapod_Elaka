@@ -29,7 +29,7 @@ export default function Login() {
         { timeout: 10000 },
       );
 
-      // Store the token 
+      // Store the token
       localStorage.setItem("token", response.data.token);
       localStorage.setItem(
         "user",
@@ -38,7 +38,7 @@ export default function Login() {
           name: response.data.name,
           email: response.data.email,
           identity: response.data.identity,
-          password: password, 
+          password: password,
         }),
       );
 
@@ -260,17 +260,41 @@ export default function Login() {
                 </button>
               </div>
             </div>
-{/*
+
             <div className="row-between">
-              <a href="#" className="forgot-link">
+              <Link
+                to="/forgot-password"
+                style={{
+                  color: "#e6a94f",
+                  fontSize: "13px",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  marginBottom: "15px",
+                  display: "block",
+                }}
+              >
                 Forgot password?
-              </a>
+              </Link>
             </div>
-*/}        
-        {errorMsg && <div style={{ color: "#f87171", fontSize: "14px", marginBottom: "16px" }}>{errorMsg}</div>}
-      <button type="submit" className="btn-custom-primary" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Log in"}
-      </button>
+
+            {errorMsg && (
+              <div
+                style={{
+                  color: "#f87171",
+                  fontSize: "14px",
+                  marginBottom: "16px",
+                }}
+              >
+                {errorMsg}
+              </div>
+            )}
+            <button
+              type="submit"
+              className="btn-custom-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Log in"}
+            </button>
           </form>
 
           <div className="signup-prompt">
