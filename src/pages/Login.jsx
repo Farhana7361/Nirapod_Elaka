@@ -258,12 +258,13 @@ export default function Login() {
                 </button>
               </div>
             </div>
-
+{/*
             <div className="row-between">
               <a href="#" className="forgot-link">
                 Forgot password?
               </a>
             </div>
+*/}        
         {errorMsg && <div style={{ color: "#f87171", fontSize: "14px", marginBottom: "16px" }}>{errorMsg}</div>}
       <button type="submit" className="btn-custom-primary" disabled={isLoading}>
           {isLoading ? "Logging in..." : "Log in"}
