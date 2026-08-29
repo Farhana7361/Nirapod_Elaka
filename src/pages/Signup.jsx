@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { 
-  User, Lock, MapPin, Check,CircleCheck} from "lucide-react";
-
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { User, Lock, MapPin, Check, CircleCheck } from "lucide-react";
 import "../styles/Signup.css";
 import axios from "axios";
 
 export default function Signup() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState("fwd");
   const [isSuccess, setIsSuccess] = useState(false);
@@ -29,14 +29,21 @@ export default function Signup() {
     const { name, value, type, checked } = e.target;
     let val = type === "checkbox" ? checked : value;
 
-  
     if (name === "identity") {
       val = val.replace(/\D/g, "");
     }
 
     setFormData((prev) => ({ ...prev, [name]: val }));
   };
+  useEffect(() => {
+    if (isSuccess) {
+      const timer = setTimeout(() => {
+        window.location.href = "/";// change to your home route
+      }, 2000); // 2 second delay so the user sees the success screen
 
+      return () => clearTimeout(timer); // cleanup if component unmounts
+    }
+  }, [isSuccess]);
   const validate = () => {
     if (step === 0) {
       const validLengths = [10, 13, 17];
@@ -59,7 +66,6 @@ export default function Signup() {
 
   const nextStep = () => {
     if (!validate()) {
-      
       return;
     }
     if (step < 3) {
@@ -79,31 +85,47 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-        const response = await axios.post("http://localhost:5000/api/auth/register", {
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-        });
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          identity: formData.identity,
+        },
+      );
 
-        console.log("Registered:", response.data);
-        setIsSuccess(true);
+      console.log("Registered:", response.data);
+
+      // Save token and user in localStorage for auto-login
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          _id: response.data._id,
+          name: response.data.name,
+          email: response.data.email,
+          identity: response.data.identity,
+        }),
+      );
+      setIsSuccess(true);
     } catch (err) {
-        if (err.response) {
-            setErrorMsg(err.response.data.message);
-        } else {
-            setErrorMsg("Something went wrong. Please try again.");
-        }
+      if (err.response) {
+        setErrorMsg(err.response.data.message);
+      } else {
+        setErrorMsg("Something went wrong. Please try again.");
+      }
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-};
+  };
 
   return (
     <div className="signup-wrapper">
       <main className="signup-card">
         <div className="signup-head">
           <div className="signup-wordmark">
-             <MapPin size={20} color="#f2a93b" strokeWidth={2.5} />
+            <MapPin size={20} color="#f2a93b" strokeWidth={2.5} />
             <span>Nirapod Elaka</span>
           </div>
         </div>
@@ -115,22 +137,31 @@ export default function Signup() {
                 <User size={18} />
               </div>
               <div className="signup-step-track">
-                <div className="signup-step-track-fill" style={{ width: step >= 1 ? "100%" : "0%" }}></div>
+                <div
+                  className="signup-step-track-fill"
+                  style={{ width: step >= 1 ? "100%" : "0%" }}
+                ></div>
               </div>
               <div className={`signup-step-icon ${step >= 1 ? "active" : ""}`}>
                 <Lock size={18} />
-                 </div>
+              </div>
               <div className="signup-step-track">
-                <div className="signup-step-track-fill" style={{ width: step >= 2 ? "100%" : "0%" }}></div>
+                <div
+                  className="signup-step-track-fill"
+                  style={{ width: step >= 2 ? "100%" : "0%" }}
+                ></div>
               </div>
               <div className={`signup-step-icon ${step >= 2 ? "active" : ""}`}>
                 <MapPin size={18} />
               </div>
               <div className="signup-step-track">
-                <div className="signup-step-track-fill" style={{ width: step >= 3 ? "100%" : "0%" }}></div>
+                <div
+                  className="signup-step-track-fill"
+                  style={{ width: step >= 3 ? "100%" : "0%" }}
+                ></div>
               </div>
               <div className={`signup-step-icon ${step >= 3 ? "active" : ""}`}>
-                 <Check size={18} />
+                <Check size={18} />
               </div>
             </div>
           </div>
@@ -140,8 +171,7 @@ export default function Signup() {
           {isSuccess ? (
             <div className="signup-success">
               <div className="ring">
-                 <CircleCheck size={95} />
-                
+                <CircleCheck size={95} />
               </div>
               <h2>You're on the map</h2>
             </div>
@@ -150,18 +180,39 @@ export default function Signup() {
               {step === 0 && (
                 <div className={`signup-step-panel enter-${direction}`}>
                   <div className="signup-step-title">Who you are</div>
-                  <p className="signup-step-sub">Just for your login — never shown on a report.</p>
+                  <p className="signup-step-sub">
+                    Just for your login — never shown on a report.
+                  </p>
                   <div className="signup-field">
                     <label>Name</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleInput} placeholder="Your name" />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInput}
+                      placeholder="Your name"
+                    />
                   </div>
                   <div className="signup-field">
                     <label>Email</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleInput} placeholder="you@domain.com" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInput}
+                      placeholder="you@domain.com"
+                    />
                   </div>
                   <div className="signup-field">
                     <label>NID or Birth Certificate</label>
-                    <input type="text" name="identity" value={formData.identity} onChange={handleInput} placeholder=" " maxLength="10" />
+                    <input
+                      type="text"
+                      name="identity"
+                      value={formData.identity}
+                      onChange={handleInput}
+                      placeholder=" "
+                      maxLength="10"
+                    />
                   </div>
                 </div>
               )}
@@ -173,15 +224,39 @@ export default function Signup() {
                   <div className="signup-field">
                     <label>Password</label>
                     <div className="signup-field-row">
-                      <input type={showPass ? "text" : "password"} name="password" value={formData.password} onChange={handleInput} placeholder="••••••••" />
-                      <button type="button" className="signup-toggle-visibility" onClick={() => setShowPass(!showPass)}>{showPass ? "Hide" : "Show"}</button>
+                      <input
+                        type={showPass ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInput}
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        className="signup-toggle-visibility"
+                        onClick={() => setShowPass(!showPass)}
+                      >
+                        {showPass ? "Hide" : "Show"}
+                      </button>
                     </div>
                   </div>
                   <div className="signup-field">
                     <label>Confirm Password</label>
                     <div className="signup-field-row">
-                      <input type={showPass2 ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleInput} placeholder="••••••••" />
-                      <button type="button" className="signup-toggle-visibility" onClick={() => setShowPass2(!showPass2)}>{showPass2 ? "Hide" : "Show"}</button>
+                      <input
+                        type={showPass2 ? "text" : "password"}
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleInput}
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        className="signup-toggle-visibility"
+                        onClick={() => setShowPass2(!showPass2)}
+                      >
+                        {showPass2 ? "Hide" : "Show"}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -190,10 +265,18 @@ export default function Signup() {
               {step === 2 && (
                 <div className={`signup-step-panel enter-${direction}`}>
                   <div className="signup-step-title">Your area</div>
-                  <p className="signup-step-sub">We'll show this area first on your map.</p>
+                  <p className="signup-step-sub">
+                    We'll show this area first on your map.
+                  </p>
                   <div className="signup-field">
                     <label>Neighborhood</label>
-                    <input type="text" name="area" value={formData.area} onChange={handleInput} placeholder="e.g. Dhanmondi, Dhaka" />
+                    <input
+                      type="text"
+                      name="area"
+                      value={formData.area}
+                      onChange={handleInput}
+                      placeholder="e.g. Dhanmondi, Dhaka"
+                    />
                   </div>
                 </div>
               )}
@@ -202,31 +285,68 @@ export default function Signup() {
                 <div className={`signup-step-panel enter-${direction}`}>
                   <div className="signup-step-title">Confirm & create</div>
                   <div className="signup-summary">
-                    <div className="signup-summary-row"><span className="signup-k">NAME</span><span>{formData.name}</span></div>
-                    <div className="signup-summary-row"><span className="signup-k">EMAIL</span><span>{formData.email}</span></div>
-                    <div className="signup-summary-row"><span className="signup-k">AREA</span><span>{formData.area}</span></div>
+                    <div className="signup-summary-row">
+                      <span className="signup-k">NAME</span>
+                      <span>{formData.name}</span>
+                    </div>
+                    <div className="signup-summary-row">
+                      <span className="signup-k">EMAIL</span>
+                      <span>{formData.email}</span>
+                    </div>
+                    <div className="signup-summary-row">
+                      <span className="signup-k">AREA</span>
+                      <span>{formData.area}</span>
+                    </div>
                   </div>
-                  <div className="signup-note"><b>Reports stay anonymous.</b> This info only signs you in.</div>
+                  <div className="signup-note">
+                    <b>Reports stay anonymous.</b> This info only signs you in.
+                  </div>
                   {errorMsg && <div className="signup-error">{errorMsg}</div>}
                   <label className="signup-terms">
-                    <input type="checkbox" name="terms" checked={formData.terms} onChange={handleInput} />
-                    <span>I agree to guidelines and understand reports are anonymous.</span>
+                    <input
+                      type="checkbox"
+                      name="terms"
+                      checked={formData.terms}
+                      onChange={handleInput}
+                    />
+                    <span>
+                      I agree to guidelines and understand reports are
+                      anonymous.
+                    </span>
                   </label>
                 </div>
               )}
 
               <div className="signup-bnav">
                 {step > 0 && (
-                  <button type="button" className="signup-btn signup-btn-back" onClick={prevStep}>Back</button>
+                  <button
+                    type="button"
+                    className="signup-btn signup-btn-back"
+                    onClick={prevStep}
+                  >
+                    Back
+                  </button>
                 )}
-                <button type="button" className={`signup-btn signup-btn-next ${step === 3 ? 'final' : ''}`} onClick={nextStep} disabled={isLoading}>
-                  {isLoading ? "Creating..." : step === 3 ? "Create account" : "Continue"}
+                <button
+                  type="button"
+                  className={`signup-btn signup-btn-next ${step === 3 ? "final" : ""}`}
+                  onClick={nextStep}
+                  disabled={isLoading}
+                >
+                  {isLoading
+                    ? "Creating..."
+                    : step === 3
+                      ? "Create account"
+                      : "Continue"}
                 </button>
               </div>
 
               {step === 0 && (
                 <div className="signup-login-prompt">
-                  Already have an account? <a href="/login" className="signup-login-link">Log in</a>
+                  Already have an account?{" "}
+                  <a href="/login" className="signup-login-link">
+                    Log in
+                  </a>
                 </div>
               )}
             </>

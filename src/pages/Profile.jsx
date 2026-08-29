@@ -1,7 +1,96 @@
-import React, { useState } from "react";
-import { Shield } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Shield } from "lucide-react";
+import axios from "axios";
 export default function Profile() {
   const [isPwOpen, setIsPwOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showActualPw, setShowActualPw] = useState(false);
+
+  //new pw
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [pwStatus, setPwStatus] = useState({ type: "", message: "" });
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  //  input changes
+  const handlePwInput = (e) => {
+    const { id, value } = e.target;
+    const keyMap = {
+      cur: "currentPassword",
+      new1: "newPassword",
+      new2: "confirmPassword",
+    };
+    setPasswordData((prev) => ({ ...prev, [keyMap[id]]: value }));
+  };
+
+  const handlePasswordSubmit = async () => {
+    const { currentPassword, newPassword, confirmPassword } = passwordData;
+
+    // Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPwStatus({ type: "error", message: "All fields are required." });
+      return;
+    }
+    if (newPassword.length < 8) {
+      setPwStatus({
+        type: "error",
+        message: "New password must be at least 8 characters.",
+      });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPwStatus({ type: "error", message: "New passwords do not match." });
+      return;
+    }
+
+    setPwStatus({ type: "", message: "" });
+    setIsUpdating(true);
+
+    try {
+      const token = localStorage.getItem("token"); // Retrieve token
+
+      const response = await axios.put(
+        "http://localhost:5000/api/auth/change-password",
+        { currentPassword, newPassword },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      setPwStatus({
+        type: "success",
+        message: "Password updated successfully!",
+      });
+
+      setTimeout(() => {
+        setIsPwOpen(false);
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        setPwStatus({ type: "", message: "" });
+      }, 2000);
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        "Failed to update password. Check current password.";
+      setPwStatus({ type: "error", message: msg });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <>
       <style>{`
@@ -208,6 +297,7 @@ margin: 0 0 0 75px;
   }
   .pw-panel.open{ display:block; }
   .pw-panel-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  
   @media (max-width:640px){
     .pw-panel-grid{ grid-template-columns:1fr; }
   }
@@ -249,6 +339,17 @@ margin: 0 0 0 75px;
     font-family:'Inter', sans-serif; font-weight:600; font-size:13.5px;
     cursor:pointer;
   }
+
+.pw-row div {
+  display: flex;
+  gap: 8px;
+}
+/* pass change error */
+
+        .pw-status { font-size: 13px; margin-top: 10px; font-weight: 500; }
+        .pw-status.error { color: #ef4f4f; }
+        .pw-status.success { color: #3ecf8e; }
+
 
   /*    Report  */
 
@@ -297,7 +398,7 @@ margin: 0 0 0 75px;
         <div className="layout">
           {/* Left Column / ID Card */}
           <div className="id-card">
-            <p className="id-name">Farhana Rahman</p>
+            <p className="id-name">{user?.name || "Loading..."}</p>
             <p className="id-sub">MEMBER SINCE MAR 2023 · DHAKA</p>
             <div className="id-badge">
               <Shield size={14} />
@@ -330,31 +431,50 @@ margin: 0 0 0 75px;
               <div className="field-grid">
                 <div className="field">
                   <span className="field-label">Full name</span>
-                  <span className="field-value">Farhana Rahman</span>
+                  <span className="field-value">
+                    {user?.name || "Loading..."}
+                  </span>
                 </div>
                 <div className="field">
-                  <span className="field-label">Date of birth</span>
-                  <span className="field-value">21 August 2009</span>
+                  <span className="field-label">NID</span>
+                  <span className="field-value">
+                    {user?.identity || "Not provided"}
+                  </span>
                 </div>
                 <div className="field" style={{ gridColumn: "1 / -1" }}>
                   <span className="field-label">Email</span>
-                  <span className="field-value mono">farhana.cse@aust.edu</span>
+                  <span className="field-value mono">
+                    {user?.email || "Not provided"}
+                  </span>
                 </div>
               </div>
 
               <div className="pw-row">
                 <span className="field-label">Password</span>
-                <span className="pw-dots">••••••••••</span>
-                <button
-                  className="btn-change1"
-                  id="pwToggle"
-                  type="button"
-                  aria-expanded={isPwOpen}
-                  aria-controls="pwPanel"
-                  onClick={() => setIsPwOpen((prev) => !prev)}
-                >
-                  {isPwOpen ? "Close" : "Change"}
-                </button>
+                <span className="pw-dots">
+                  {showActualPw
+                    ? user?.password || "No Password Found"
+                    : "********"}
+                </span>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    className="btn-change1"
+                    type="button"
+                    onClick={() => setShowActualPw(!showActualPw)}
+                  >
+                    {showActualPw ? "Hide" : "Show"}
+                  </button>
+                  <button
+                    className="btn-change1"
+                    id="pwToggle"
+                    type="button"
+                    aria-expanded={isPwOpen}
+                    aria-controls="pwPanel"
+                    onClick={() => setIsPwOpen((prev) => !prev)}
+                  >
+                    {isPwOpen ? "Close" : "Change"}
+                  </button>
+                </div>
               </div>
 
               <div
@@ -367,6 +487,8 @@ margin: 0 0 0 75px;
                     <input
                       type="password"
                       id="cur"
+                      value={passwordData.currentPassword}
+                      onChange={handlePwInput}
                       placeholder="Enter current password"
                     />
                   </div>
@@ -375,6 +497,8 @@ margin: 0 0 0 75px;
                     <input
                       type="password"
                       id="new1"
+                      value={passwordData.newPassword}
+                      onChange={handlePwInput}
                       placeholder="At least 8 characters"
                     />
                   </div>
@@ -383,12 +507,19 @@ margin: 0 0 0 75px;
                     <input
                       type="password"
                       id="new2"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePwInput}
                       placeholder="Re-enter new password"
                     />
                   </div>
                   <div className="pw-actions">
-                    <button className="btn-primary1" type="button">
-                      Save password
+                    <button
+                      className="btn-primary1"
+                      type="button"
+                      onClick={handlePasswordSubmit}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? "Saving..." : "Save password"}
                     </button>
                     <button
                       className="btn-ghost1"
@@ -400,6 +531,12 @@ margin: 0 0 0 75px;
                     </button>
                   </div>
                 </div>
+
+                {pwStatus.message && (
+                  <div className={`pw-status ${pwStatus.type}`}>
+                    {pwStatus.message}
+                  </div>
+                )}
               </div>
             </section>
 

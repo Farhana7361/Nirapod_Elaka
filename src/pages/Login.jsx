@@ -1,19 +1,61 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { MapPin } from "lucide-react";
+import axios from "axios";
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
 
-    if (form.checkValidity()) {
-      window.location.href = "/profile";
-    } else {
+    if (!form.checkValidity()) {
       form.reportValidity();
+      return;
+    }
+
+    setErrorMsg("");
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password },
+        { timeout: 10000 },
+      );
+
+      // Store the token
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          _id: response.data._id,
+          name: response.data.name,
+          email: response.data.email,
+          identity: response.data.identity,
+          password: password,
+        }),
+      );
+
+      window.location.href = "/profile";
+    } catch (err) {
+      console.error("Login failed:", err);
+      if (err.response) {
+        setErrorMsg(
+          err.response.data.message || "Login failed. Please try again.",
+        );
+      } else if (err.code === "ERR_NETWORK") {
+        setErrorMsg("Can't reach the server. Is the backend running?");
+      } else {
+        setErrorMsg("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -28,7 +70,7 @@ export default function Login() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #0a0c12;
+          background: #10151f;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           padding: 24px;
         }
@@ -40,7 +82,7 @@ export default function Login() {
           border: 1px solid #2a3040;
           border-radius: 22px;
           padding: 36px 32px 28px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+          
         }
 
         .brand {
@@ -189,6 +231,8 @@ export default function Login() {
                   placeholder="you@domain.com"
                   required
                   className="custom-input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -204,6 +248,8 @@ export default function Login() {
                   placeholder="Your password"
                   required
                   className="custom-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -216,13 +262,38 @@ export default function Login() {
             </div>
 
             <div className="row-between">
-              <a href="#" className="forgot-link">
+              <Link
+                to="/forgot-password"
+                style={{
+                  color: "#e6a94f",
+                  fontSize: "13px",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  marginBottom: "15px",
+                  display: "block",
+                }}
+              >
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
-            <button type="submit" className="btn-custom-primary">
-              Log in
+            {errorMsg && (
+              <div
+                style={{
+                  color: "#f87171",
+                  fontSize: "14px",
+                  marginBottom: "16px",
+                }}
+              >
+                {errorMsg}
+              </div>
+            )}
+            <button
+              type="submit"
+              className="btn-custom-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Log in"}
             </button>
           </form>
 
