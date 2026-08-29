@@ -1,7 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import L from "leaflet";
+import "leaflet-control-geocoder";
+import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "./Map.css";
 
 export default function Map() {
+  const [showReportButton, setShowReportButton] = useState(false);
+  let selectedLat = null;
+  let selectedLng = null;
+  let marker = null;
 
   useEffect(() => {
     var map = L.map("map").setView([23.8103, 90.4125], 13);
@@ -14,6 +21,42 @@ export default function Map() {
       }
     );
     osm.addTo(map);
+
+    L.Control.geocoder({
+      defaultMarkGeocode: false
+    })
+      .on("markgeocode", function(e) {
+
+        selectedLat = e.geocode.center.lat;
+         selectedLng = e.geocode.center.lng;
+
+        if (marker) {
+          map.removeLayer(marker);
+        }
+
+        map.setView([selectedLat, selectedLng], 18);
+
+        marker = L.marker([selectedLat, selectedLng]).addTo(map);
+
+      })
+        .addTo(map);
+
+    map.on("click", function(e) {
+
+      selectedLat = e.latlng.lat;
+      selectedLng = e.latlng.lng;
+
+      console.log("Latitude:", selectedLat);
+      console.log("Longitude:", selectedLng);
+
+      if (marker) {
+        map.removeLayer(marker);
+      }
+
+      marker = L.marker([selectedLat, selectedLng]).addTo(map);
+      setShowReportButton(true);
+
+    });
 
     return () => {
       map.remove();
@@ -76,6 +119,11 @@ export default function Map() {
 
           <p>Click anywhere on the map to <br /> drop a pin and file a report.</p>
         </div>
+        {showReportButton && (
+         <button className="report-button">
+           REPORT THIS LOCATION
+          </button>
+        )}
         
       </div>
 

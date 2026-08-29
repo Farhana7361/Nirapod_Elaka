@@ -1,5 +1,4 @@
 #main{
-  /* height: calc(100vh - 64px);*/
     width: 100%;
     display: flex;
     margin-top: 64px;
@@ -114,4 +113,28 @@
 .report-box p {
   font-size: 16px;
   color: #9ab5d5;
+}
+.leaflet-control-geocoder-form input {
+  color: black !important;
+}
+
+.leaflet-control-geocoder-form input::placeholder {
+  color: black !important;
+  opacity: 1;
+}
+.report-button {
+  margin-top: 15px;
+  width: 90%;
+  padding: 12px 15px;
+  background-color: #04350b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.report-button:hover {
+  background-color: #6c2e2e;
 }
