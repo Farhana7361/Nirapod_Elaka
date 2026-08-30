@@ -1,5 +1,5 @@
 const dns = require('dns');
-// Set DNS servers to bypass local ISP/network SRV blocking
+// Set DNS servers 
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const express = require("express");

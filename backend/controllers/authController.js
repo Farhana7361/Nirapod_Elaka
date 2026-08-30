@@ -34,7 +34,7 @@ const registerUser = async (req, res) => {
             expiresIn: "30d",
         });
 
-        // 6. Send back the user info + token (never send the password back!)
+        // 6. Send back the user info + token
         res.status(201).json({
             _id: user._id,
             name: user.name,
@@ -60,7 +60,6 @@ const loginUser = async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            // Keep this generic — don't reveal whether the email exists
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
