@@ -38,10 +38,10 @@ export default function Signup() {
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        window.location.href = "/";// change to your home route
-      }, 2000); // 2 second delay so the user sees the success screen
+        window.location.href = "/";
+      }, 2000); // 2 second delay 
 
-      return () => clearTimeout(timer); // cleanup if component unmounts
+      return () => clearTimeout(timer); 
     }
   }, [isSuccess]);
   const validate = () => {
@@ -97,7 +97,7 @@ export default function Signup() {
 
       console.log("Registered:", response.data);
 
-      // Save token and user in localStorage for auto-login
+      // Save token 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem(
         "user",
