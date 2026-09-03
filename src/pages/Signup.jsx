@@ -34,6 +34,7 @@ export default function Signup() {
     }
 
     setFormData((prev) => ({ ...prev, [name]: val }));
+     if (errorMsg) setErrorMsg("");
   };
   useEffect(() => {
     if (isSuccess) {
@@ -46,10 +47,13 @@ export default function Signup() {
   }, [isSuccess]);
   const validate = () => {
     if (step === 0) {
-      const validLengths = [10, 13, 17];
+      const validLengths = [10];
+      const trimmedName = formData.name.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
       return (
-        formData.name &&
-        formData.email.includes("@") &&
+        trimmedName.length > 0 &&
+        emailRegex.test(formData.email.trim()) &&
         validLengths.includes(formData.identity.length)
       );
     }
@@ -62,12 +66,14 @@ export default function Signup() {
     if (step === 2) return formData.area.length > 0;
     if (step === 3) return formData.terms;
     return true;
-  };
+};
 
   const nextStep = () => {
     if (!validate()) {
+      setErrorMsg("Enter a valid data");
       return;
     }
+    setErrorMsg("");
     if (step < 3) {
       setDirection("fwd");
       setStep(step + 1);
@@ -77,6 +83,7 @@ export default function Signup() {
   };
 
   const prevStep = () => {
+    setErrorMsg("");
     setDirection("back");
     setStep(step - 1);
   };
@@ -186,6 +193,7 @@ export default function Signup() {
                   <div className="signup-field">
                     <label>Name</label>
                     <input
+                      required
                       type="text"
                       name="name"
                       value={formData.name}
@@ -196,6 +204,7 @@ export default function Signup() {
                   <div className="signup-field">
                     <label>Email</label>
                     <input
+                      required
                       type="email"
                       name="email"
                       value={formData.email}
@@ -206,6 +215,7 @@ export default function Signup() {
                   <div className="signup-field">
                     <label>NID or Birth Certificate</label>
                     <input
+                      required
                       type="text"
                       name="identity"
                       value={formData.identity}
@@ -301,7 +311,7 @@ export default function Signup() {
                   <div className="signup-note">
                     <b>Reports stay anonymous.</b> This info only signs you in.
                   </div>
-                  {errorMsg && <div className="signup-error">{errorMsg}</div>}
+                  
                   <label className="signup-terms">
                     <input
                       type="checkbox"
@@ -316,7 +326,7 @@ export default function Signup() {
                   </label>
                 </div>
               )}
-
+              {errorMsg && <div className="signup-error">{errorMsg}</div>}
               <div className="signup-bnav">
                 {step > 0 && (
                   <button

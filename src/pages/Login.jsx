@@ -38,7 +38,6 @@ export default function Login() {
           name: response.data.name,
           email: response.data.email,
           identity: response.data.identity,
-          password: password,
         }),
       );
 

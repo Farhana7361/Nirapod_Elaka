@@ -4,7 +4,6 @@ import axios from "axios";
 export default function Profile() {
   const [isPwOpen, setIsPwOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const [showActualPw, setShowActualPw] = useState(false);
 
   //new pw
   const [passwordData, setPasswordData] = useState({
@@ -147,7 +146,22 @@ margin: 0 0 0 75px;
   top: calc(var(--nav-h) + 16px);
   
 }
-
+.id-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 4px solid rgba(255, 255, 255, 0.22);
+  color: #fbfaf6;
+  font-family: "Tiro Bangla", serif;
+  font-size: 30px;
+  font-weight: 600;
+  
+}
 
 .id-name {
   text-align: center;
@@ -155,7 +169,7 @@ margin: 0 0 0 75px;
   font-size: 21px;
   color: #fbfaf6;
   margin: 0 0 4px;
-  padding-top:42px;
+  padding-top:12px;
 }
 .id-sub {
   text-align: center;
@@ -389,7 +403,9 @@ margin: 0 0 0 75px;
     font-size:12px; color:#000000;
     display:flex; gap:14px; flex-wrap:wrap;
   }
-  .report-meta span{ display:inline-flex; align-items:center; gap:5px; }/*           
+  .report-meta span{ display:inline-flex; align-items:center; gap:5px; }/*    
+  
+
 
 
       `}</style>
@@ -398,6 +414,9 @@ margin: 0 0 0 75px;
         <div className="layout">
           {/* Left Column / ID Card */}
           <div className="id-card">
+            <div className="id-avatar">
+              {user?.name?.charAt(0).toUpperCase() || "?"}
+            </div>
             <p className="id-name">{user?.name || "Loading..."}</p>
             <p className="id-sub">MEMBER SINCE MAR 2023 · DHAKA</p>
             <div className="id-badge">
@@ -451,30 +470,17 @@ margin: 0 0 0 75px;
 
               <div className="pw-row">
                 <span className="field-label">Password</span>
-                <span className="pw-dots">
-                  {showActualPw
-                    ? user?.password || "No Password Found"
-                    : "********"}
-                </span>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <button
-                    className="btn-change1"
-                    type="button"
-                    onClick={() => setShowActualPw(!showActualPw)}
-                  >
-                    {showActualPw ? "Hide" : "Show"}
-                  </button>
-                  <button
-                    className="btn-change1"
-                    id="pwToggle"
-                    type="button"
-                    aria-expanded={isPwOpen}
-                    aria-controls="pwPanel"
-                    onClick={() => setIsPwOpen((prev) => !prev)}
-                  >
-                    {isPwOpen ? "Close" : "Change"}
-                  </button>
-                </div>
+                <span className="pw-dots">••••••••••</span>
+                <button
+                  className="btn-change1"
+                  id="pwToggle"
+                  type="button"
+                  aria-expanded={isPwOpen}
+                  aria-controls="pwPanel"
+                  onClick={() => setIsPwOpen((prev) => !prev)}
+                >
+                  {isPwOpen ? "Close" : "Change"}
+                </button>
               </div>
 
               <div
