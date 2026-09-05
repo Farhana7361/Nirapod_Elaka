@@ -27,6 +27,8 @@ export default function Navbar() {
   const mobileLinkClass = ({ isActive }) =>
     `btn btn-ghost justify-start w-full ${isActive ? "btn-active" : ""}`;
 
+  const isAdmin = user?.role === "admin";
+
   return (
     <nav className="navbar fixed top-0 left-0 w-full z-50 bg-base-100 shadow-sm px-6 flex-col items-stretch">
       <div className="flex items-center justify-between w-full">
@@ -38,8 +40,8 @@ export default function Navbar() {
         {/* Desktop links */}
         <div className="hidden lg:flex gap-2 items-center">
           {!user && <NavLink to="/" className={linkClass}>Home</NavLink>}
-          <NavLink to="/map" className={linkClass}>Map</NavLink>
-          <NavLink to="/community" className={linkClass}>Community</NavLink>
+          {!isAdmin && <NavLink to="/map" className={linkClass}>Map</NavLink>}
+          {!isAdmin && <NavLink to="/community" className={linkClass}>Community</NavLink>}
 
           {user ? (
             <>
@@ -71,8 +73,8 @@ export default function Navbar() {
       {menuOpen && (
         <div className="lg:hidden flex flex-col gap-1 py-3 w-full">
           {!user && <NavLink to="/" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>Home</NavLink>}
-          <NavLink to="/map" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>Map</NavLink>
-          <NavLink to="/community" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>Community</NavLink>
+          {!isAdmin && <NavLink to="/map" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>Map</NavLink>}
+          {!isAdmin && <NavLink to="/community" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>Community</NavLink>}
 
           {user ? (
             <>
