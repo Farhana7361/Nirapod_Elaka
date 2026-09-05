@@ -41,11 +41,12 @@ export default function Login() {
         }),
       );
 
-      if (response.data.identity === "admin") {
+     if (response.data.role === "admin") {
         window.location.href = "/admin";
       } else {
         window.location.href = "/profile";
       }
+
     } catch (err) {
       console.error("Login failed:", err);
       if (err.response) {
