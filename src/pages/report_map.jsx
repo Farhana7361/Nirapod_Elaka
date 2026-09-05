@@ -1,15 +1,15 @@
 import { useState } from "react";
+import axios from "axios";
 import "./report_map.css";
 
-export default function ReportMap({ onClose,latitude, longitude,onSuccess}) {
+export default function ReportMap({ onClose, latitude, longitude, onSuccess }) {
 
   const [time, setTime] = useState("Morning");
   const [type, setType] = useState("Theft");
   const [rating, setRating] = useState(0);
   const [description, setDescription] = useState("");
 
-
-  const submitReport = (e) => {
+  const submitReport = async (e) => {
 
     e.preventDefault();
 
@@ -18,17 +18,27 @@ export default function ReportMap({ onClose,latitude, longitude,onSuccess}) {
     }
 
     const reportData = {
-        latitude,
-        longitude,
-        time,
-        type,
-        rating,
-        description
+      lat: latitude,
+      lng: longitude,
+      time,
+      type,
+      rating,
+      description
     };
 
-    console.log(reportData);
+    try {
+      const token = localStorage.getItem("token");
 
-    onSuccess();
+      await axios.post("http://localhost:5000/api/reports", reportData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      onSuccess();
+    } catch (err) {
+      console.log("Submit Report Error:", err.response?.data || err.message);
+    }
 
   };
 

@@ -23,8 +23,13 @@ const reportSchema = new mongoose.Schema(
         rating: {
             type: Number,
             required: true,
-            min: 1,
+            min: 0,
             max: 5,
+        },
+        time: {
+            type: String,
+            enum: ["Morning", "Afternoon", "Evening", "Night"],
+            required: true,
         },
         status: {
             type: String,
