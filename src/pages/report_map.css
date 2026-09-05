@@ -1,0 +1,352 @@
+.report-map {
+    width: 360px;
+
+    background-color: #0f151e;
+    color: white;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #293548;
+    border-radius: 10px;
+
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+
+    overflow: hidden;
+}
+
+
+/* HEADER */
+
+.report-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+
+}
+
+
+.report-header h2 {
+
+    margin: 0;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 19px;
+
+    font-weight: 600;
+
+}
+
+
+/* CLOSE BUTTON */
+
+.close-button {
+
+    width: 35px;
+
+    height: 35px;
+
+    background: transparent;
+
+    border: none;
+
+    color: #cbd5e1;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    border-radius: 5px;
+
+}
+
+
+.close-button:hover {
+
+    background-color: #202936;
+
+    color: white;
+
+}
+
+
+/* FORM GROUP */
+
+.form-group {
+
+    margin-bottom: 15px;
+
+}
+
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 9px;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 14px;
+
+    color: #dbe3ed;
+
+}
+
+
+/* SELECT */
+
+.form-group select {
+
+    width: 100%;
+
+    height: 42px;
+
+    padding: 0 10px;
+
+    background-color: rgb(2, 31, 54);
+
+    color: white;
+
+    border: 1px solid #293b4f;
+
+    border-radius: 5px;
+
+    font-size: 14px;
+
+    outline: none;
+
+}
+
+
+.form-group select:focus {
+
+    border-color: #3498db;
+
+    box-shadow: 0 0 5px #3498db;
+
+}
+
+
+/* RATING */
+
+.rating-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.rating-header label {
+
+    margin-bottom: 0;
+
+}
+
+
+.rating-header span {
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+}
+
+
+/* RATING SLIDER */
+
+.rating-slider {
+
+    width: 100%;
+
+    margin-top: 14px;
+
+    cursor: pointer;
+
+}
+
+
+/* RATING COLORS */
+
+.rating-0 {
+
+    accent-color: #ff4d55;
+
+}
+
+
+.rating-1 {
+
+    accent-color: #ff4d55;
+
+}
+
+
+.rating-2 {
+
+    accent-color: #ff8c42;
+
+}
+
+
+.rating-3 {
+
+    accent-color: #ffad19;
+
+}
+
+
+.rating-4 {
+
+    accent-color: #72d572;
+
+}
+
+
+.rating-5 {
+
+    accent-color: #35d99b;
+
+}
+
+
+/* RATING NUMBERS */
+
+.rating-number {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 5px;
+
+    font-size: 12px;
+
+    color: #8995a5;
+
+}
+
+
+/* TEXTAREA */
+
+.form-group textarea {
+
+    width: 100%;
+
+    height: 90px;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    resize: none;
+
+    overflow-y: auto;
+
+    background-color: #101b28;
+
+    color: white;
+
+    border: 1px solid #29384b;
+
+    border-radius: 5px;
+
+    outline: none;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 14px;
+
+}
+
+
+.form-group textarea:focus {
+
+    border-color: #3498db;
+
+    box-shadow: 0 0 5px #3498db;
+
+}
+
+
+.form-group textarea::placeholder {
+
+    color: #718096;
+
+}
+
+
+/* CHARACTER */
+
+.character {
+
+    margin-top: 6px;
+
+    margin-bottom: 0;
+
+    font-size: 12px;
+
+    color: #ff5b63;
+
+}
+
+
+.character.valid {
+
+    color: #35d69a;
+
+}
+
+
+/* SUBMIT */
+
+.submit-button {
+
+    width: 100%;
+
+    height: 46px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background-color: #08752a;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+.submit-button:hover:not(:disabled) {
+
+    background-color: #099633;
+
+}
+
+
+.submit-button:disabled {
+
+    background-color: #26332b;
+
+    color: #69756e;
+
+    cursor: not-allowed;
+
+}

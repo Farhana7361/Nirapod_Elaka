@@ -3,11 +3,15 @@ import L from "leaflet";
 import "leaflet-control-geocoder";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "./Map.css";
+import ReportMap from "./report_map";
+
 
 export default function Map() {
   const [showReportButton, setShowReportButton] = useState(false);
-  let selectedLat = null;
-  let selectedLng = null;
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [selectedLat, setSelectedLat] = useState(null);
+  const [selectedLng, setSelectedLng] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   let marker = null;
 
   useEffect(() => {
@@ -25,35 +29,40 @@ export default function Map() {
     L.Control.geocoder({
       defaultMarkGeocode: false
     })
-      .on("markgeocode", function(e) {
+    .on("markgeocode", function(e) {
 
-        selectedLat = e.geocode.center.lat;
-         selectedLng = e.geocode.center.lng;
+      setSelectedLat(e.geocode.center.lat);
+      setSelectedLng(e.geocode.center.lng);
 
-        if (marker) {
-          map.removeLayer(marker);
-        }
+      if (marker) {
+        map.removeLayer(marker);
+      }
+      map.setView(
+        [e.geocode.center.lat, e.geocode.center.lng],
+        18
+      );
 
-        map.setView([selectedLat, selectedLng], 18);
-
-        marker = L.marker([selectedLat, selectedLng]).addTo(map);
-
+      marker = L.marker([
+        e.geocode.center.lat,
+        e.geocode.center.lng
+        ]).addTo(map);
       })
         .addTo(map);
 
     map.on("click", function(e) {
 
-      selectedLat = e.latlng.lat;
-      selectedLng = e.latlng.lng;
+      setSelectedLat(e.latlng.lat);
+      setSelectedLng(e.latlng.lng);
 
-      console.log("Latitude:", selectedLat);
-      console.log("Longitude:", selectedLng);
 
       if (marker) {
         map.removeLayer(marker);
       }
 
-      marker = L.marker([selectedLat, selectedLng]).addTo(map);
+      marker = L.marker([
+       e.latlng.lat,
+       e.latlng.lng
+       ]).addTo(map);
       setShowReportButton(true);
 
     });
@@ -120,9 +129,9 @@ export default function Map() {
           <p>Click anywhere on the map to <br /> drop a pin and file a report.</p>
         </div>
         {showReportButton && (
-         <button className="report-button">
-           REPORT THIS LOCATION
-          </button>
+        <button className="report-button" onClick={() => setShowReportForm(true)}>
+            REPORT THIS LOCATION
+        </button>
         )}
         
       </div>
@@ -130,6 +139,32 @@ export default function Map() {
       <div id="right">
 
         <div id="map"></div>
+
+        {showReportForm && ( 
+        <div className="report-container">
+
+        <ReportMap
+          onClose={() => setShowReportForm(false)}
+          latitude={selectedLat}
+          longitude={selectedLng}
+          onSuccess={() => {
+            setShowReportForm(false);
+            setShowSuccess(true);
+
+            setTimeout(() => {
+              setShowSuccess(false);
+            }, 3000);
+          }}
+        />
+
+        </div>
+        )}
+
+      {showSuccess && (
+        <div className="success-message">
+          ✓ Your report has been submitted successfully!
+        </div>
+      )}
 
       </div>
 

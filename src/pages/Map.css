@@ -16,6 +16,7 @@
 #right{
     height: 630px;
     width: 100%;
+    position: relative;
 }
 .list{
     font-family: Arial, Helvetica, sans-serif;
@@ -137,4 +138,43 @@
 
 .report-button:hover {
   background-color: #6c2e2e;
+}
+
+.report-container {
+
+    position: absolute;
+
+    top: 20px;
+
+    left: 400px;
+
+    z-index: 1000;
+
+}
+.success-message {
+
+    position: absolute;
+
+    top: 10px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 1100;
+
+    padding: 14px 22px;
+
+    background-color: #08752a;
+
+    color: white;
+
+    border-radius: 8px;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
 }
