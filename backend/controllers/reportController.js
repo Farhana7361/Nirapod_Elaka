@@ -1,4 +1,4 @@
-const Report = require("../models/report");
+const Report = require("../models/Report");
 
 // POST /api/reports
 const createReport = async (req, res) => {

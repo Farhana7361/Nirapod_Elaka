@@ -8,7 +8,7 @@ import Signup from './pages/Signup.jsx';
 import Profile from './pages/Profile.jsx';
 import Footer from './components/Footer.jsx';
 import ForgotPassword from "./pages/ForgotPassword"; 
-import Admin from "./pages/admin.jsx"; 
+import Admin from "./pages/Admin.jsx"; 
 export default function App() {
   return (
     <div className="app-shell">

@@ -1,5 +1,5 @@
-const Report = require("../models/report");
-const Flag = require("../models/flag");
+const Report = require("../models/Report");
+const Flag = require("../models/Flag");
 
 // GET /api/moderation/reports/pending
 const getPendingReports = async (req, res) => {
