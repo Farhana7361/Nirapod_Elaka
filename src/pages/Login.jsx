@@ -28,6 +28,7 @@ export default function Login() {
         { email, password },
         { timeout: 10000 },
       );
+      console.log("LOGIN RESPONSE:", response.data);
 
       // Store the token
       localStorage.setItem("token", response.data.token);
@@ -38,6 +39,7 @@ export default function Login() {
           name: response.data.name,
           email: response.data.email,
           identity: response.data.identity,
+          role: response.data.role,
         }),
       );
 
