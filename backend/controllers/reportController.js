@@ -3,9 +3,9 @@ const Report = require("../models/Report");
 // POST /api/reports
 const createReport = async (req, res) => {
     try {
-        const { type, description, lat, lng, rating, time } = req.body;
+        const { type, description, lat, lng, address, rating, time } = req.body;
 
-        if (!type || !description || lat === undefined || lng === undefined || rating === undefined || !time) {
+        if (!type || !description || lat === undefined || lng === undefined || !address || rating === undefined || !time) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
@@ -17,6 +17,7 @@ const createReport = async (req, res) => {
             type,
             description,
             location: { lat, lng },
+            address,
             rating,
             time,
             reportedBy: req.user._id,
@@ -32,7 +33,10 @@ const createReport = async (req, res) => {
 // GET /api/reports/approved
 const getApprovedReports = async (req, res) => {
     try {
-        const reports = await Report.find({ status: "approved" });
+        const reports = await Report.find({ status: "approved" })
+            .populate("reportedBy", "name")
+            .sort({ createdAt: -1 });
+
         res.status(200).json(reports);
     } catch (err) {
         console.log("Get Approved Reports Error:", err);
@@ -64,12 +68,13 @@ const updateMyReport = async (req, res) => {
             return res.status(403).json({ message: "You can only edit your own reports" });
         }
 
-        const { type, description, lat, lng, rating, time } = req.body;
+        const { type, description, lat, lng, address, rating, time } = req.body;
 
         if (type) report.type = type;
         if (description) report.description = description;
         if (lat !== undefined) report.location.lat = lat;
         if (lng !== undefined) report.location.lng = lng;
+        if (address) report.address = address;
         if (rating !== undefined) report.rating = rating;
         if (time) report.time = time;
 
@@ -85,4 +90,36 @@ const updateMyReport = async (req, res) => {
     }
 };
 
-module.exports = { createReport, getApprovedReports, getMyReports, updateMyReport };
+// PUT /api/reports/:id/like
+const toggleLike = async (req, res) => {
+    try {
+        const report = await Report.findById(req.params.id);
+        if (!report) {
+            return res.status(404).json({ message: "Report not found" });
+        }
+
+        const userId = req.user._id.toString();
+        const index = report.likes.findIndex((id) => id.toString() === userId);
+
+        if (index === -1) {
+            report.likes.push(req.user._id);
+        } else {
+            report.likes.splice(index, 1);
+        }
+
+        await report.save();
+
+        res.status(200).json({ likes: report.likes, likeCount: report.likes.length });
+    } catch (err) {
+        console.log("Toggle Like Error:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+module.exports = {
+    createReport,
+    getApprovedReports,
+    getMyReports,
+    updateMyReport,
+    toggleLike,
+};
