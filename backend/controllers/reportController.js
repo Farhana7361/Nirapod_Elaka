@@ -36,7 +36,6 @@ const getApprovedReports = async (req, res) => {
         const reports = await Report.find({ status: "approved" })
             .populate("reportedBy", "name")
             .sort({ createdAt: -1 });
-
         res.status(200).json(reports);
     } catch (err) {
         console.log("Get Approved Reports Error:", err);
@@ -115,6 +114,8 @@ const toggleLike = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+
 
 module.exports = {
     createReport,
