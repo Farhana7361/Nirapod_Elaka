@@ -67,7 +67,7 @@ export default function Admin() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-     const [statsRes, usersRes, reportsRes] = await Promise.all([
+      const [statsRes, usersRes, reportsRes] = await Promise.all([
         axios.get("http://localhost:5000/api/admin/stats", getAuthHeader()),
         axios.get("http://localhost:5000/api/admin/users", getAuthHeader()),
         axios.get("http://localhost:5000/api/admin/reports", getAuthHeader()),
@@ -559,12 +559,24 @@ export default function Admin() {
                       </td>
 
                       <td className="col-right">
-                        <button
-                          onClick={() => handleDeleteReport(report._id)}
-                          className="dismiss-btn"
-                        >
-                          Dismiss / Delete
-                        </button>
+                        <div className="report-actions-cell">
+                          <button
+                            onClick={() =>
+                              handleUpdateReportStatus(report._id, "approved")
+                            }
+                            className="accept-btn"
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleUpdateReportStatus(report._id, "reviewing")
+                            }
+                            className="review-btn"
+                          >
+                            Review
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

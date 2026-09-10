@@ -661,21 +661,54 @@
   background-color: #ef4f4f;
 }
 
-.dismiss-btn {
+
+
+
+
+.report-actions-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.accept-btn {
   padding: 0.375rem 0.75rem;
   border-radius: 0.5rem;
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.2);
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s;
 }
 
-.dismiss-btn:hover {
-  background-color: rgba(239, 68, 68, 0.2);
+.accept-btn:hover {
+  background-color: rgba(16, 185, 129, 0.2);
 }
+
+.review-btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  background-color: rgba(245, 166, 35, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 166, 35, 0.2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.review-btn:hover {
+  background-color: rgba(245, 166, 35, 0.2);
+}
+
+.accept-btn:disabled,
+.review-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 
 .active-records-badge {
   font-size: 0.75rem;
