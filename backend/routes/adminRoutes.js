@@ -7,7 +7,7 @@ const {
     getReports,
     deleteUser,
     updateUserRole,
-    deleteReport,
+    updateReportStatus,
 } = require("../controllers/adminController");
 
 // All routes require authentication and admin privileges
@@ -23,6 +23,6 @@ router.put("/users/:id/role", updateUserRole);
 
 // Reports Management
 router.get("/reports", getReports);
-router.delete("/reports/:id", deleteReport);
+router.put("/reports/:id/status", updateReportStatus);
 
 module.exports = router;

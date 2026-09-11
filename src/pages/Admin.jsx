@@ -156,25 +156,29 @@ export default function Admin() {
     }
   };
 
-  const handleDeleteReport = async (id) => {
+  const handleUpdateReportStatus = async (id, status) => {
     try {
-      await axios.delete(
-        `http://localhost:5000/api/admin/reports/${id}`,
+      const res = await axios.put(
+        `http://localhost:5000/api/admin/reports/${id}/status`,
+        { status },
         getAuthHeader(),
       );
-      setReports((prev) => prev.filter((r) => r._id !== id));
-      showNotification(
-        "success",
-        "Safety report dismissed/deleted successfully.",
+      setReports((prev) =>
+        prev.map((r) =>
+          r._id === id
+            ? { ...r, status: res.data.report.status, reviewNote: res.data.report.reviewNote }
+            : r
+        )
       );
+      showNotification("success", `Report marked as "${status}".`);
     } catch (err) {
-      console.error("Delete report error:", err);
+      console.error("Update report status error:", err);
       showNotification(
         "error",
-        err.response?.data?.message || "Failed to delete report",
+        err.response?.data?.message || "Failed to update report status",
       );
     }
-  };
+  }; 
 
   // Filter users by search query and role
   const filteredUsers = users.filter((u) => {
@@ -536,7 +540,7 @@ export default function Admin() {
 
                       <td className="report-location">
                         📍{" "}
-                        {report.location?.address ||
+                        {report.address ||
                           `${report.location?.lat}, ${report.location?.lng}`}
                       </td>
 
@@ -570,7 +574,7 @@ export default function Admin() {
                           </button>
                           <button
                             onClick={() =>
-                              handleUpdateReportStatus(report._id, "reviewing")
+                              handleUpdateReportStatus(report._id, "review")
                             }
                             className="review-btn"
                           >

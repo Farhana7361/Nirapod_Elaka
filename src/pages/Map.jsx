@@ -7,12 +7,40 @@ import ReportMap from "./report_map";
 
 
 export default function Map() {
+  const [areaName, setAreaName] = useState("");
   const [showReportButton, setShowReportButton] = useState(false);
   const [showReportForm, setShowReportForm] = useState(false);
   const [selectedLat, setSelectedLat] = useState(null);
   const [selectedLng, setSelectedLng] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   let marker = null;
+
+  const getAreaName = async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+      );
+
+      const data = await response.json();
+
+      const address = data.address;
+
+      const name =
+        address.suburb ||
+        address.neighbourhood ||
+        address.city_district ||
+        address.city ||
+        address.town ||
+        address.village ||
+        "Unknown area";
+
+      setAreaName(name);
+
+    } catch (error) {
+      console.error("Failed to get area name:", error);
+      setAreaName("Unknown area");
+    }
+  };
 
   useEffect(() => {
     var map = L.map("map").setView([23.8103, 90.4125], 13);
@@ -51,8 +79,13 @@ export default function Map() {
 
     map.on("click", function(e) {
 
-      setSelectedLat(e.latlng.lat);
-      setSelectedLng(e.latlng.lng);
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+
+      setSelectedLat(lat);
+      setSelectedLng(lng);
+
+      getAreaName(lat, lng);
 
 
       if (marker) {
@@ -147,6 +180,7 @@ export default function Map() {
           onClose={() => setShowReportForm(false)}
           latitude={selectedLat}
           longitude={selectedLng}
+          address={areaName}
           onSuccess={() => {
             setShowReportForm(false);
             setShowSuccess(true);
