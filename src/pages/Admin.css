@@ -1,4 +1,46 @@
 /* ===== Base / Layout ===== */
+
+.message-box {
+  position: fixed;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  background-color: #161c28;
+  border: 1px solid #2a3449;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.message-box-success {
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.message-box-error {
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.message-box-close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.message-box-close:hover {
+  opacity: 1;
+}
+
+
 .admin-page {
   min-height: 100vh;
   background-color: #0d111a;
@@ -319,7 +361,7 @@
   flex-shrink: 0;
 }
 
-/* ===== Panels (Users table & Reports table share this wrapper) ===== */
+
 .panel {
   background-color: #141924;
   border: 1px solid #242c3d;
@@ -594,10 +636,10 @@
   font-size: 0.75rem;
   color: #7e889b;
   max-width: 20rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
+
 
 .report-location {
   font-size: 0.75rem;
