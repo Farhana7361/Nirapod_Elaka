@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { Shield } from "lucide-react";
 import axios from "axios";
 
@@ -24,11 +25,21 @@ const formatDate = (date) => {
 export default function Profile() {
   const [isPwOpen, setIsPwOpen] = useState(false);
   const [user, setUser] = useState(null);
-
+  const navigate = useNavigate();
   // reports
   const [reports, setReports] = useState([]);
   const [reportsLoading, setReportsLoading] = useState(true);
   const [reportsError, setReportsError] = useState("");
+
+    useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+
+
 
   //new pw
   const [passwordData, setPasswordData] = useState({
@@ -46,24 +57,39 @@ export default function Profile() {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchMyReports = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/reports/mine", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setReports(res.data);
-      } catch (err) {
-        console.log("Get My Reports Error:", err);
-        setReportsError("Failed to load your reports.");
-      } finally {
-        setReportsLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchMyReports = async () => {
+    const token = localStorage.getItem("token");
 
-    fetchMyReports();
-  }, []);
+    if (!token) {
+      navigate("/login", { replace: true });
+      return;
+    }
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/reports/mine",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setReports(res.data);
+    } catch (err) {
+      console.log("Get My Reports Error:", err);
+
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      setReportsError("Failed to load your reports.");
+    } finally {
+      setReportsLoading(false);
+    }
+  };
+  fetchMyReports();
+}, [navigate]);
 
   // derived stats
   const totalReports = reports.length;

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router";
 import { MapPin } from "lucide-react";
 import axios from "axios";
 
@@ -9,6 +9,22 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/profile", { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,12 +59,11 @@ export default function Login() {
         }),
       );
 
-     if (response.data.role === "admin") {
+      if (response.data.role === "admin") {
         window.location.href = "/admin";
       } else {
         window.location.href = "/profile";
       }
-
     } catch (err) {
       console.error("Login failed:", err);
       if (err.response) {

@@ -14,12 +14,13 @@ export default function Navbar() {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    navigate("/login");
-  };
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  setUser(null);
+  setMenuOpen(false);
+  navigate("/login", { replace: true });
+};
 
   const linkClass = ({ isActive }) =>
     `btn btn-ghost ${isActive ? "btn-active" : ""}`;
@@ -95,3 +96,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
