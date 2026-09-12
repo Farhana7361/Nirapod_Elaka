@@ -23,6 +23,7 @@ const formatDate = (date) => {
 };
 
 export default function Profile() {
+  const [deletingId, setDeletingId] = useState(null);
   const [isPwOpen, setIsPwOpen] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -31,15 +32,13 @@ export default function Profile() {
   const [reportsLoading, setReportsLoading] = useState(true);
   const [reportsError, setReportsError] = useState("");
 
-    useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) {
       navigate("/login", { replace: true });
     }
   }, [navigate]);
-
-
 
   //new pw
   const [passwordData, setPasswordData] = useState({
@@ -57,39 +56,36 @@ export default function Profile() {
     }
   }, []);
 
-useEffect(() => {
-  const fetchMyReports = async () => {
-    const token = localStorage.getItem("token");
+  useEffect(() => {
+    const fetchMyReports = async () => {
+      const token = localStorage.getItem("token");
 
-    if (!token) {
-      navigate("/login", { replace: true });
-      return;
-    }
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/reports/mine",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setReports(res.data);
-    } catch (err) {
-      console.log("Get My Reports Error:", err);
-
-      if (err.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+      if (!token) {
         navigate("/login", { replace: true });
         return;
       }
+      try {
+        const res = await axios.get("http://localhost:5000/api/reports/mine", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setReports(res.data);
+      } catch (err) {
+        console.log("Get My Reports Error:", err);
 
-      setReportsError("Failed to load your reports.");
-    } finally {
-      setReportsLoading(false);
-    }
-  };
-  fetchMyReports();
-}, [navigate]);
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        setReportsError("Failed to load your reports.");
+      } finally {
+        setReportsLoading(false);
+      }
+    };
+    fetchMyReports();
+  }, [navigate]);
 
   // derived stats
   const totalReports = reports.length;
@@ -167,6 +163,32 @@ useEffect(() => {
     }
   };
 
+  const handleDeleteReport = async (reportId) => {
+    const confirmed = window.confirm(
+      "Delete this report? This cannot be undone.",
+    );
+    if (!confirmed) return;
+
+    setDeletingId(reportId);
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/reports/${reportId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReports((prev) => prev.filter((r) => r._id !== reportId));
+    } catch (err) {
+      console.log("Delete Report Error:", err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login", { replace: true });
+        return;
+      }
+      alert(err.response?.data?.message || "Failed to delete report.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
   return (
     <>
       <style>{`
@@ -484,7 +506,33 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
     font-size:12px; color:#000000;
     display:flex; gap:14px; flex-wrap:wrap;
   }
-  .report-meta span{ display:inline-flex; align-items:center; gap:5px; }/*    
+  .report-meta span{ display:inline-flex; align-items:center; gap:5px; }
+  
+   .report-delete-btn {
+  background: none;
+  border: none;
+  color: #9aa4ba;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.report-delete-btn:hover {
+  background: rgba(239, 79, 79, 0.12);
+  color: var(--danger);
+}
+
+.report-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+} 
+  
+  
+  /*    
+
+
 
       `}</style>
 
@@ -649,10 +697,24 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
                       <div className={`report ${status.cls}`} key={r._id}>
                         <div className="report-top">
                           <span className="report-title">{r.type}</span>
-
-                          <span className={`pill ${status.cls}`}>
-                            {status.label}
-                          </span>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                          >
+                            <span className={`pill ${status.cls}`}>
+                              {status.label}
+                            </span>
+                            <button
+                              onClick={() => handleDeleteReport(r._id)}
+                              disabled={deletingId === r._id}
+                              className="report-delete-btn"
+                            >
+                              {deletingId === r._id ? "..." : "✕"}
+                            </button>
+                          </div>
                         </div>
 
                         <div className="report-meta">
