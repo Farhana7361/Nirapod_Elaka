@@ -17,6 +17,12 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
+        // 2b. Check if this NID already registered
+        const existingIdentity = await User.findOne({ identity });
+        if (existingIdentity) {
+              return res.status(400).json({ message: "This NID/Birth Certificate is already registered" });
+        }
+
         // 3. Hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -42,9 +48,17 @@ const registerUser = async (req, res) => {
             identity: user.identity,
             token,
         });
-    } catch (err) {
-        console.log("Register Error:", err);
-        res.status(500).json({ message: "Server error" });
+   } catch (err) {
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyPattern)[0];
+        const message =
+            field === "identity"
+                ? "This NID/Birth Certificate is already registered"
+                : "User already exists";
+        return res.status(400).json({ message });
+    }
+    console.log("Register Error:", err);
+    res.status(500).json({ message: "Server error" });
     }
 };
 

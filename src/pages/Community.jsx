@@ -317,7 +317,7 @@ export default function Community() {
                 </div>
 
                 {/* REPORT DESCRIPTION */}
-                <p className="text-[#9aa4ba] leading-6 mb-5">{report.description}</p>
+                <p className="text-[#9aa4ba] leading-6 mb-5 break-words">{report.description}</p>
 
                 {/* REPORT BOTTOM */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-[#2b3548] pt-4">
@@ -337,11 +337,21 @@ export default function Community() {
                       disabled={likeLoading[report._id]}
                       className={
                         isLiked
-                          ? "px-4 py-2 rounded-lg border border-[#f5a623] text-[#f5a623] bg-[#2a2210] transition"
-                          : "px-4 py-2 rounded-lg border border-[#2b3548] text-[#e9ecf3] hover:bg-[#1f2838] transition"
+                          ? "px-4 py-2 rounded-lg border border-[#f5a623] text-[#f5a623] bg-[#2a2210] transition flex items-center gap-2"
+                          : "px-4 py-2 rounded-lg border border-[#2b3548] text-[#e9ecf3] hover:bg-[#1f2838] transition flex items-center gap-2"
                       }
                     >
-                      {isLiked ? "♥" : "♡"} {report.likes?.length || 0}
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill={isLiked ? "currentColor" : "none"}
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      >
+                        <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z" />
+                      </svg>
+                      {report.likes?.length || 0}
                     </button>
 
                     <button

@@ -115,12 +115,33 @@ const toggleLike = async (req, res) => {
     }
 };
 
+// DELETE /api/reports/:id
+const deleteMyReport = async (req, res) => {
+    try {
+        const report = await Report.findById(req.params.id);
 
+        if (!report) {
+            return res.status(404).json({ message: "Report not found" });
+        }
+
+        if (report.reportedBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "You can only delete your own reports" });
+        }
+
+        await report.deleteOne();
+
+        res.status(200).json({ message: "Report deleted successfully" });
+    } catch (err) {
+        console.log("Delete Report Error:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 
 module.exports = {
     createReport,
     getApprovedReports,
     getMyReports,
     updateMyReport,
+    deleteMyReport,
     toggleLike,
 };

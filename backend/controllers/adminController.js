@@ -113,21 +113,28 @@ const updateUserRole = async (req, res) => {
     }
 };
 
-// DELETE /api/admin/reports/:id
-const deleteReport = async (req, res) => {
+const updateReportStatus = async (req, res) => {
     try {
         const { id } = req.params;
+        const { status, reviewNote } = req.body;
+
+        if (!["approved", "review", "pending"].includes(status)) {
+            return res.status(400).json({ message: "Invalid status specified" });
+        }
 
         const report = await Report.findById(id);
         if (!report) {
             return res.status(404).json({ message: "Report not found" });
         }
 
-        await Report.findByIdAndDelete(id);
-        res.status(200).json({ message: "Report deleted successfully" });
+        report.status = status;
+        report.reviewNote = reviewNote || "";
+        await report.save();
+
+        res.status(200).json({ message: "Report status updated successfully", report });
     } catch (err) {
-        console.error("Admin Delete Report Error:", err);
-        res.status(500).json({ message: "Server error deleting report" });
+        console.error("Admin Update Report Status Error:", err);
+        res.status(500).json({ message: "Server error updating report status" });
     }
 };
 
@@ -137,5 +144,5 @@ module.exports = {
     getReports,
     deleteUser,
     updateUserRole,
-    deleteReport,
+    updateReportStatus,
 };

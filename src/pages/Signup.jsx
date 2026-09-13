@@ -12,6 +12,21 @@ export default function Signup() {
   const [showPass, setShowPass] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
 
+
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (user.role === "admin") {
+      navigate("/admin", { replace: true });
+    } else {
+      navigate("/profile", { replace: true });
+    }
+  }
+}, [navigate]);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

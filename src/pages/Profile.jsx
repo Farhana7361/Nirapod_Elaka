@@ -1,9 +1,44 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { Shield } from "lucide-react";
 import axios from "axios";
+
+function getStatus(status) {
+  if (status === "approved") {
+    return { label: "Resolved", cls: "resolved" };
+  } else if (status === "review") {
+    return { label: "Under review", cls: "review" };
+  } else {
+    return { label: "Pending review", cls: "pending" };
+  }
+}
+
+const formatDate = (date) => {
+  const d = new Date(date);
+  return d.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 export default function Profile() {
+  const [deletingId, setDeletingId] = useState(null);
   const [isPwOpen, setIsPwOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  // reports
+  const [reports, setReports] = useState([]);
+  const [reportsLoading, setReportsLoading] = useState(true);
+  const [reportsError, setReportsError] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
 
   //new pw
   const [passwordData, setPasswordData] = useState({
@@ -20,6 +55,44 @@ export default function Profile() {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+
+  useEffect(() => {
+    const fetchMyReports = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/login", { replace: true });
+        return;
+      }
+      try {
+        const res = await axios.get("http://localhost:5000/api/reports/mine", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setReports(res.data);
+      } catch (err) {
+        console.log("Get My Reports Error:", err);
+
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        setReportsError("Failed to load your reports.");
+      } finally {
+        setReportsLoading(false);
+      }
+    };
+    fetchMyReports();
+  }, [navigate]);
+
+  // derived stats
+  const totalReports = reports.length;
+  const resolvedCount = reports.filter((r) => r.status === "approved").length;
+  const underReviewCount = reports.filter(
+    (r) => r.status === "review" || r.status === "pending",
+  ).length;
 
   //  input changes
   const handlePwInput = (e) => {
@@ -90,10 +163,36 @@ export default function Profile() {
     }
   };
 
+  const handleDeleteReport = async (reportId) => {
+    const confirmed = window.confirm(
+      "Delete this report? This cannot be undone.",
+    );
+    if (!confirmed) return;
+
+    setDeletingId(reportId);
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/reports/${reportId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReports((prev) => prev.filter((r) => r._id !== reportId));
+    } catch (err) {
+      console.log("Delete Report Error:", err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login", { replace: true });
+        return;
+      }
+      alert(err.response?.data?.message || "Failed to delete report.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
   return (
     <>
       <style>{`
-    :root {
+        :root {
       --bg: #10151f;
       --panel: #171e2c;
       --ink: #e9ecf3;
@@ -367,9 +466,13 @@ margin: 0 0 0 75px;
 
   /*    Report  */
 
-  
 
-.report-list{ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px; }
+.report-list {
+display:flex; flex-direction:column; gap:10px; margin:14px 0 6px; 
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
   .report{
     border:1px solid var(--line);
     border-left:3px solid var(--gold);
@@ -403,8 +506,31 @@ margin: 0 0 0 75px;
     font-size:12px; color:#000000;
     display:flex; gap:14px; flex-wrap:wrap;
   }
-  .report-meta span{ display:inline-flex; align-items:center; gap:5px; }/*    
+  .report-meta span{ display:inline-flex; align-items:center; gap:5px; }
   
+   .report-delete-btn {
+  background: none;
+  border: none;
+  color: #9aa4ba;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.report-delete-btn:hover {
+  background: rgba(239, 79, 79, 0.12);
+  color: var(--danger);
+}
+
+.report-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+} 
+  
+  
+  /*    
 
 
 
@@ -427,15 +553,15 @@ margin: 0 0 0 75px;
             <div className="id-stats">
               <div className="id-stat">
                 <span className="k">Reports filed</span>
-                <span className="v">3</span>
+                <span className="v">{totalReports}</span>
               </div>
               <div className="id-stat">
                 <span className="k">Resolved</span>
-                <span className="v">1</span>
+                <span className="v">{resolvedCount}</span>
               </div>
               <div className="id-stat">
                 <span className="k">Under review</span>
-                <span className="v">2</span>
+                <span className="v">{underReviewCount}</span>
               </div>
             </div>
           </div>
@@ -549,51 +675,59 @@ margin: 0 0 0 75px;
             <section className="panel" aria-labelledby="report-head">
               <div className="panel-head">
                 <h2 id="report-head">My Report</h2>
-                <span className="count">3 filed</span>
+                <span className="count">{totalReports} filed</span>
               </div>
 
               <div className="report-list">
-                <div className="report review">
-                  <div className="report-top">
-                    <span className="report-title">
-                      Broken streetlight, Road 7
-                    </span>
-                    <span className="pill review">Under review</span>
-                  </div>
-                  <div className="report-meta">
-                    <span className="report-id">#NE-1042</span>
-                    <span>Filed 3 Aug 2026</span>
-                    <span>Dhanmondi</span>
-                  </div>
-                </div>
+                {reportsLoading && <p>Loading your reports...</p>}
 
-                <div className="report pending">
-                  <div className="report-top">
-                    <span className="report-title">
-                      Suspicious loitering, alley behind school
-                    </span>
-                    <span className="pill pending">Pending review</span>
-                  </div>
-                  <div className="report-meta">
-                    <span className="report-id">#NE-1077</span>
-                    <span>Filed 12 Aug 2026</span>
-                    <span>Uttara</span>
-                  </div>
-                </div>
+                {!reportsLoading && reportsError && (
+                  <p style={{ color: "#ef4f4f" }}>{reportsError}</p>
+                )}
 
-                <div className="report resolved">
-                  <div className="report-top">
-                    <span className="report-title">
-                      Open manhole near market
-                    </span>
-                    <span className="pill resolved">Resolved</span>
-                  </div>
-                  <div className="report-meta">
-                    <span className="report-id">#NE-0981</span>
-                    <span>Filed 21 Jun 2026</span>
-                    <span>Mohammadpur</span>
-                  </div>
-                </div>
+                {!reportsLoading && !reportsError && reports.length === 0 && (
+                  <p>You haven't filed any reports yet.</p>
+                )}
+                {!reportsLoading &&
+                  !reportsError &&
+                  reports.map((r) => {
+                    const status = getStatus(r.status);
+
+                    return (
+                      <div className={`report ${status.cls}`} key={r._id}>
+                        <div className="report-top">
+                          <span className="report-title">{r.type}</span>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                          >
+                            <span className={`pill ${status.cls}`}>
+                              {status.label}
+                            </span>
+                            <button
+                              onClick={() => handleDeleteReport(r._id)}
+                              disabled={deletingId === r._id}
+                              className="report-delete-btn"
+                            >
+                              {deletingId === r._id ? "..." : "✕"}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="report-meta">
+                          <span className="report-id">
+                            #{r._id.slice(-6).toUpperCase()}
+                          </span>
+
+                          <span>Filed {formatDate(r.createdAt)}</span>
+                          <span>{r.address}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
             </section>
           </div>

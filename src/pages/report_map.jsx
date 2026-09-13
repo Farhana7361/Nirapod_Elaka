@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import "./report_map.css";
 
-export default function ReportMap({ onClose, latitude, longitude, onSuccess }) {
+export default function ReportMap({ onClose, latitude, longitude, onSuccess, address }) {
 
   const [time, setTime] = useState("Morning");
   const [type, setType] = useState("Theft");
@@ -20,6 +20,7 @@ export default function ReportMap({ onClose, latitude, longitude, onSuccess }) {
     const reportData = {
       lat: latitude,
       lng: longitude,
+      address,
       time,
       type,
       rating,

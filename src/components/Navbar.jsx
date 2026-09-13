@@ -14,12 +14,13 @@ export default function Navbar() {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    navigate("/login");
-  };
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  setUser(null);
+  setMenuOpen(false);
+  navigate("/login", { replace: true });
+};
 
   const linkClass = ({ isActive }) =>
     `btn btn-ghost ${isActive ? "btn-active" : ""}`;
@@ -46,7 +47,7 @@ export default function Navbar() {
 
           {user ? (
             <>
-              <NavLink to="/profile" className={({ isActive }) => `btn btn-ghost flex items-center gap-2 ${isActive ? "btn-active" : ""}`}>
+              <NavLink to={isAdmin ? "/admin" : "/profile"} className={({ isActive }) => `btn btn-ghost flex items-center gap-2 ${isActive ? "btn-active" : ""}`}>
                 <User size={18} />
                 {user.name.split(" ")[0]}
               </NavLink>
@@ -96,3 +97,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

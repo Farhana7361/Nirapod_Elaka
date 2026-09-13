@@ -1,20 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import {
-  Users,
-  Shield,
-  FileText,
-  Trash2,
-  Search,
-  UserCheck,
-  UserX,
-  RefreshCw,
-  LogOut,
-  AlertTriangle,
-  CheckCircle2,
-  ExternalLink,
-  ShieldAlert,
-  MapPin,
+  Users,Shield,FileText,Trash2,Search,UserCheck,UserX,RefreshCw,LogOut,AlertTriangle,CheckCircle2,ExternalLink,ShieldAlert,MapPin,
 } from "lucide-react";
 import axios from "axios";
 import "./Admin.css";
@@ -23,7 +10,7 @@ export default function Admin() {
   const navigate = useNavigate();
   const [currentAdmin, setCurrentAdmin] = useState(null);
   const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'users' | 'reports'
-
+  const [visibleReports, setVisibleReports] = useState([]);
   // Data states
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
@@ -31,7 +18,6 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
-  // Notification / Alert
   const [feedback, setFeedback] = useState({ type: "", message: "" });
   const [userToDelete, setUserToDelete] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
@@ -51,6 +37,13 @@ export default function Admin() {
     }
     fetchAdminData();
   }, []);
+
+  useEffect(() => {
+    const filtered = reports.filter(
+      (r) => r.status === "pending" || r.status === "review",
+    );
+    setVisibleReports(filtered);
+  }, [reports]);
 
   const getAuthHeader = () => {
     const token = localStorage.getItem("token");
@@ -156,27 +149,40 @@ export default function Admin() {
     }
   };
 
-  const handleDeleteReport = async (id) => {
+  const handleUpdateReportStatus = async (id, status) => {
     try {
-      await axios.delete(
-        `http://localhost:5000/api/admin/reports/${id}`,
+      const res = await axios.put(
+        `http://localhost:5000/api/admin/reports/${id}/status`,
+        { status },
         getAuthHeader(),
       );
-      setReports((prev) => prev.filter((r) => r._id !== id));
-      showNotification(
-        "success",
-        "Safety report dismissed/deleted successfully.",
-      );
+
+      if (status === "approved") {
+        setReports((prev) => prev.filter((r) => r._id !== id));
+      } else {
+        setReports((prev) =>
+          prev.map((r) =>
+            r._id === id
+              ? {
+                  ...r,
+                  status: res.data.report.status,
+                  reviewNote: res.data.report.reviewNote,
+                }
+              : r,
+          ),
+        );
+      }
+      showNotification("success", `Report marked as "${status}".`);
     } catch (err) {
-      console.error("Delete report error:", err);
+      console.error("Update report status error:", err);
       showNotification(
         "error",
-        err.response?.data?.message || "Failed to delete report",
+        err.response?.data?.message || "Failed to update report status",
       );
     }
   };
 
-  // Filter users by search query and role
+  // Filter users
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
       u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -191,7 +197,19 @@ export default function Admin() {
 
   return (
     <div className="admin-page">
-      {/* Top Admin Navbar */}
+      {feedback.message && (
+        <div
+          className={`message-box ${feedback.type === "success" ? "message-box-success" : "message-box-error"}`}
+        >
+          <span>{feedback.message}</span>
+          <button
+            onClick={() => setFeedback({ type: "", message: "" })}
+            className="message-box-close"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Main Container */}
       <main className="admin-main">
@@ -217,7 +235,7 @@ export default function Admin() {
               className={`tab-btn ${activeTab === "reports" ? "active" : ""}`}
             >
               <FileText size={16} />
-              Reports ({reports.length})
+              Reports ({visibleReports.length})
             </button>
           </div>
 
@@ -276,7 +294,7 @@ export default function Admin() {
                   {stats?.stats?.totalReports ?? 1248}
                 </div>
                 <p className="stat-sub stat-sub-amber">
-                  {reports.length} pending moderation
+                  {visibleReports.length} pending moderation
                 </p>
               </div>
 
@@ -294,9 +312,6 @@ export default function Admin() {
               </div>
             </div>
 
-            {/* Breakdown & Recent Quick View */}
-
-            {/* Quick Actions & System Info */}
             <div className="shortcuts-card">
               <div className="shortcuts-header">
                 <h3 className="shortcuts-title">
@@ -509,7 +524,7 @@ export default function Admin() {
                 </p>
               </div>
               <span className="active-records-badge">
-                {reports.length} Active Records
+                {visibleReports.length} Active Records
               </span>
             </div>
 
@@ -525,61 +540,67 @@ export default function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {reports.map((report) => (
-                    <tr key={report._id}>
-                      <td>
-                        <div className="report-type">{report.type}</div>
-                        <div className="report-desc" title={report.description}>
-                          {report.description}
-                        </div>
-                      </td>
-
-                      <td className="report-location">
-                        📍{" "}
-                        {report.location?.address ||
-                          `${report.location?.lat}, ${report.location?.lng}`}
-                      </td>
-
-                      <td>
-                        <div className="report-reporter">
-                          {report.reportedBy?.name || "Unknown"}
-                        </div>
-                        <div className="report-time">
-                          {new Date(report.createdAt).toLocaleString()}
-                        </div>
-                      </td>
-
-                      <td>
-                        <span
-                          className={`severity-badge severity-${report.status}`}
-                        >
-                          <span className="severity-dot"></span>
-                          {report.status}
-                        </span>
-                      </td>
-
-                      <td className="col-right">
-                        <div className="report-actions-cell">
-                          <button
-                            onClick={() =>
-                              handleUpdateReportStatus(report._id, "approved")
-                            }
-                            className="accept-btn"
+                  {visibleReports.length > 0 ? (
+                    visibleReports.map((report) => (
+                      <tr key={report._id}>
+                        <td>
+                          <div className="report-type">{report.type}</div>
+                          <div
+                            className="report-desc"
+                            title={report.description}
                           >
-                            Accept
-                          </button>
-                          <button
-                            onClick={() =>
-                              handleUpdateReportStatus(report._id, "reviewing")
-                            }
-                            className="review-btn"
-                          >
-                            Review
-                          </button>
-                        </div>
+                            {report.description}
+                          </div>
+                        </td>
+
+                        <td className="report-location">
+                          📍{" "}
+                          {report.address ||
+                            `${report.location?.lat}, ${report.location?.lng}`}
+                        </td>
+
+                        <td>
+                          <div className="report-reporter">
+                            {report.reportedBy?.name || "Unknown"}
+                          </div>
+                          <div className="report-time">
+                            {new Date(report.createdAt).toLocaleString()}
+                          </div>
+                        </td>
+
+                        <td>
+                          {report.status}            
+                        </td>
+
+                        <td className="col-right">
+                          <div className="report-actions-cell">
+                            <button
+                              onClick={() =>
+                               handleUpdateReportStatus(report._id, "approved")
+                              }
+                              className="accept-btn"
+                            >
+                              Accept
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleUpdateReportStatus(report._id, "review")
+                              }
+                              className="review-btn"
+                            >
+                              Review
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="empty-row">
+                        No pending reports to review.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

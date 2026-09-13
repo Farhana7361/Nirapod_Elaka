@@ -56,7 +56,7 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      // Assumes your backend has this endpoint
+      
       await axios.post("http://localhost:5000/api/auth/reset-password", {
         email,
         newPassword,

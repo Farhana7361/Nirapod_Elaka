@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
         identity: {
             type: String,
             required: true,
+            unique: true,
         },
         role: {
             type: String,
