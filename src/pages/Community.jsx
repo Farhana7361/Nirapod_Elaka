@@ -317,7 +317,7 @@ export default function Community() {
                 </div>
 
                 {/* REPORT DESCRIPTION */}
-                <p className="text-[#9aa4ba] leading-6 mb-5">{report.description}</p>
+                <p className="text-[#9aa4ba] leading-6 mb-5 break-words">{report.description}</p>
 
                 {/* REPORT BOTTOM */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-[#2b3548] pt-4">
