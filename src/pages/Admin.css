@@ -657,55 +657,6 @@
   color: #7e889b;
 }
 
-.severity-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.severity-dot {
-  width: 0.375rem;
-  height: 0.375rem;
-  border-radius: 9999px;
-}
-
-.severity-safe {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.severity-safe .severity-dot {
-  background-color: #3ecf8e;
-}
-
-.severity-caution {
-  background-color: rgba(245, 166, 35, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 166, 35, 0.3);
-}
-
-.severity-caution .severity-dot {
-  background-color: #f5a623;
-}
-
-.severity-danger {
-  background-color: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.severity-danger .severity-dot {
-  background-color: #ef4f4f;
-}
-
-
-
-
 
 .report-actions-cell {
   display: inline-flex;

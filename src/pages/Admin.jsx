@@ -1,20 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import {
-  Users,
-  Shield,
-  FileText,
-  Trash2,
-  Search,
-  UserCheck,
-  UserX,
-  RefreshCw,
-  LogOut,
-  AlertTriangle,
-  CheckCircle2,
-  ExternalLink,
-  ShieldAlert,
-  MapPin,
+  Users,Shield,FileText,Trash2,Search,UserCheck,UserX,RefreshCw,LogOut,AlertTriangle,CheckCircle2,ExternalLink,ShieldAlert,MapPin,
 } from "lucide-react";
 import axios from "axios";
 import "./Admin.css";
@@ -582,19 +569,14 @@ export default function Admin() {
                         </td>
 
                         <td>
-                          <span
-                            className={`severity-badge severity-${report.status}`}
-                          >
-                            <span className="severity-dot"></span>
-                            {report.status}
-                          </span>
+                          {report.status}            
                         </td>
 
                         <td className="col-right">
                           <div className="report-actions-cell">
                             <button
                               onClick={() =>
-                                handleUpdateReportStatus(report._id, "approved")
+                               handleUpdateReportStatus(report._id, "approved")
                               }
                               className="accept-btn"
                             >
