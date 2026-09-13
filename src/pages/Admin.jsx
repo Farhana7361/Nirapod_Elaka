@@ -1,7 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import {
-  Users,Shield,FileText,Trash2,Search,UserCheck,UserX,RefreshCw,LogOut,AlertTriangle,CheckCircle2,ExternalLink,ShieldAlert,MapPin,
+  Users,
+  Shield,
+  FileText,
+  Trash2,
+  Search,
+  UserCheck,
+  UserX,
+  RefreshCw,
+  LogOut,
+  AlertTriangle,
+  CheckCircle2,
+  ExternalLink,
+  ShieldAlert,
+  MapPin,
 } from "lucide-react";
 import axios from "axios";
 import "./Admin.css";
@@ -568,15 +581,13 @@ export default function Admin() {
                           </div>
                         </td>
 
-                        <td>
-                          {report.status}            
-                        </td>
+                        <td>{report.status}</td>
 
                         <td className="col-right">
                           <div className="report-actions-cell">
                             <button
                               onClick={() =>
-                               handleUpdateReportStatus(report._id, "approved")
+                                handleUpdateReportStatus(report._id, "approved")
                               }
                               className="accept-btn"
                             >
@@ -609,46 +620,46 @@ export default function Admin() {
       </main>
 
       {/* Delete User Confirmation Modal */}
-{userToDelete && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-    <div className="w-full max-w-md rounded-2xl border border-slate-700/60 bg-[#161c28] p-6 shadow-2xl shadow-black/50">
-      <div className="mb-4 flex items-center gap-3">
-        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-red-500/15 text-red-400">
-          <Trash2 size={20} />
+      {userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-700/60 bg-[#161c28] p-6 shadow-2xl shadow-black/50">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-red-500/15 text-red-400">
+                <Trash2 size={20} />
+              </div>
+              <h3 className="text-lg font-bold text-white">
+                Confirm User Deletion
+              </h3>
+            </div>
+
+            <p className="mb-6 text-sm text-slate-400">
+              Are you sure you want to delete the user{" "}
+              <strong className="text-white">"{userToDelete.name}"</strong> (
+              <span className="text-amber-400">{userToDelete.email}</span>)?
+              This action is permanent and cannot be undone.
+            </p>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setUserToDelete(null)}
+                disabled={actionLoading}
+                className="rounded-xl bg-slate-700/40 px-4 py-2 text-sm font-semibold text-slate-300 transition-colors hover:bg-slate-700/60 disabled:cursor-default disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteUser}
+                disabled={actionLoading}
+                className="rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-default disabled:opacity-50"
+              >
+                {actionLoading ? "Deleting..." : "Yes, Delete User"}
+              </button>
+            </div>
+          </div>
         </div>
-        <h3 className="text-lg font-bold text-white">
-          Confirm User Deletion
-        </h3>
-      </div>
-
-      <p className="mb-6 text-sm text-slate-400">
-        Are you sure you want to delete the user{" "}
-        <strong className="text-white">"{userToDelete.name}"</strong> (
-        <span className="text-amber-400">{userToDelete.email}</span>)? This
-        action is permanent and cannot be undone.
-      </p>
-
-      <div className="flex items-center justify-end gap-3">
-        <button
-          type="button"
-          onClick={() => setUserToDelete(null)}
-          disabled={actionLoading}
-          className="rounded-xl bg-slate-700/40 px-4 py-2 text-sm font-semibold text-slate-300 transition-colors hover:bg-slate-700/60 disabled:cursor-default disabled:opacity-50"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={handleDeleteUser}
-          disabled={actionLoading}
-          className="rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-default disabled:opacity-50"
-        >
-          {actionLoading ? "Deleting..." : "Yes, Delete User"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 }
