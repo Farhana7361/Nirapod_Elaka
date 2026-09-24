@@ -1,5 +1,7 @@
 const Report = require("../models/Report");
 const Flag = require("../models/Flag");
+const notifyReportStatus = require("../utils/notifyReportStatus");
+const Notification = require("../models/Notification");
 
 // GET /api/moderation/reports/pending
 const getPendingReports = async (req, res) => {
@@ -25,6 +27,7 @@ const approveReport = async (req, res) => {
 
         report.status = "approved";
         await report.save();
+        await notifyReportStatus(report);
 
         res.status(200).json({ message: "Report approved", report });
     } catch (err) {
@@ -42,7 +45,11 @@ const rejectReport = async (req, res) => {
         }
 
         report.status = "rejected";
+        if (req.body && req.body.reviewNote) {
+            report.reviewNote = req.body.reviewNote;
+        }
         await report.save();
+        await notifyReportStatus(report);
 
         res.status(200).json({ message: "Report rejected", report });
     } catch (err) {
@@ -83,6 +90,7 @@ const resolveFlag = async (req, res) => {
         report.status = "under_review";
         report.reviewNote = flag.reason;
         await report.save();
+        await notifyReportStatus(report);
 
         flag.status = "resolved";
         await flag.save();

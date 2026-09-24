@@ -1,4 +1,5 @@
 const Report = require("../models/Report");
+const Comment = require("../models/Comment");
 
 // POST /api/reports
 const createReport = async (req, res) => {
@@ -128,6 +129,8 @@ const deleteMyReport = async (req, res) => {
             return res.status(403).json({ message: "You can only delete your own reports" });
         }
 
+        // Remove this report's comments so they aren't left orphaned
+        await Comment.deleteMany({ report: report._id });
         await report.deleteOne();
 
         res.status(200).json({ message: "Report deleted successfully" });

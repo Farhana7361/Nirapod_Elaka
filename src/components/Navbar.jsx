@@ -1,6 +1,7 @@
-import { NavLink, useNavigate } from 'react-router';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { User, Menu, X } from 'lucide-react';
+import NotificationBell from "./NotificationBell";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -14,13 +15,13 @@ export default function Navbar() {
     }
   }, []);
 
-const handleLogout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  setUser(null);
-  setMenuOpen(false);
-  navigate("/login", { replace: true });
-};
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setMenuOpen(false);
+    navigate("/login", { replace: true });
+  };
 
   const linkClass = ({ isActive }) =>
     `btn btn-ghost ${isActive ? "btn-active" : ""}`;
@@ -34,8 +35,7 @@ const handleLogout = () => {
     <nav className="navbar fixed top-0 left-0 w-full z-50 bg-base-100 shadow-sm px-6 flex-col items-stretch">
       <div className="flex items-center justify-between w-full">
         <div className="flex-1 flex items-center gap-2">
-         <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_theme(colors.amber.400)]"></span> 
-        
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_theme(colors.amber.400)]"></span>
           <NavLink to="/" className="text-xl font-bold">Nirapod Elaka</NavLink>
         </div>
 
@@ -44,6 +44,8 @@ const handleLogout = () => {
           {!user && <NavLink to="/" className={linkClass}>Home</NavLink>}
           {!isAdmin && <NavLink to="/map" className={linkClass}>Map</NavLink>}
           {!isAdmin && <NavLink to="/community" className={linkClass}>Community</NavLink>}
+
+          {user && <NotificationBell />}
 
           {user ? (
             <>
@@ -78,6 +80,12 @@ const handleLogout = () => {
           {!isAdmin && <NavLink to="/map" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>Map</NavLink>}
           {!isAdmin && <NavLink to="/community" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>Community</NavLink>}
 
+          {user && (
+            <div className="px-3 py-2">
+              <NotificationBell />
+            </div>
+          )}
+
           {user ? (
             <>
               <NavLink to="/profile" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>
@@ -97,4 +105,3 @@ const handleLogout = () => {
     </nav>
   );
 }
-

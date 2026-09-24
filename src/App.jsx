@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Landing from './pages/Landing.jsx';
 import Map from './pages/Map.jsx';
@@ -9,23 +9,26 @@ import Profile from './pages/Profile.jsx';
 import Footer from './components/Footer.jsx';
 import ForgotPassword from "./pages/ForgotPassword"; 
 import Admin from "./pages/Admin.jsx"; 
+
 export default function App() {
   return (
-    <div className="app-shell">
-      <Navbar />
+    <BrowserRouter>
+      <div className="app-shell">
+        <Navbar />
 
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/admin" element={<Admin />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/map" element={<Map />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 }

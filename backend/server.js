@@ -19,6 +19,7 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/moderation", require("./routes/moderationRoutes"));
 app.use("/api/reports", require("./routes/reportRoutes"));
 app.use("/api/comments", require("./routes/commentRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
 
 // Database Connection
 mongoose

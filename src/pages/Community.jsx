@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router';
 import axios from 'axios';
 
@@ -47,8 +47,19 @@ export default function Community() {
   // current text typed into each report's comment box, keyed by reportId
   const [commentDrafts, setCommentDrafts] = useState({});
 
+  // Tracks which reports have a comment POST in flight (state for UI, ref for instant guard)
+  const [commentPosting, setCommentPosting] = useState({});
+  const commentPostingRef = useRef({});
+
+  // Tracks which comments are currently being deleted, keyed by commentId
+  const [commentDeleting, setCommentDeleting] = useState({});
+  const commentDeletingRef = useRef({});
+
   const [currentUser, setCurrentUser] = useState(null);
+
+  // Same pattern for likes: state for UI, ref for instant guard
   const [likeLoading, setLikeLoading] = useState({});
+  const likeLoadingRef = useRef({});
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -79,12 +90,16 @@ export default function Community() {
   const getToken = () => localStorage.getItem("token");
 
   const handleLike = async (reportId) => {
+    // Block if a like request for this report is already in flight
+    if (likeLoadingRef.current[reportId]) return;
+
     const token = getToken();
     if (!token) {
       setErrorMsg("Please log in to like a report.");
       return;
     }
 
+    likeLoadingRef.current[reportId] = true;
     setLikeLoading((prev) => ({ ...prev, [reportId]: true }));
     try {
       const res = await axios.put(
@@ -106,6 +121,7 @@ export default function Community() {
         setErrorMsg("Couldn't update like. Please try again.");
       }
     } finally {
+      likeLoadingRef.current[reportId] = false;
       setLikeLoading((prev) => ({ ...prev, [reportId]: false }));
     }
   };
@@ -131,6 +147,10 @@ export default function Community() {
 
   const handleCommentSubmit = async (reportId, e) => {
     e.preventDefault();
+
+    // Block if a post for this report is already in flight
+    if (commentPostingRef.current[reportId]) return;
+
     const token = getToken();
     if (!token) {
       setErrorMsg("Please log in to comment.");
@@ -139,6 +159,9 @@ export default function Community() {
 
     const text = (commentDrafts[reportId] || "").trim();
     if (!text) return;
+
+    commentPostingRef.current[reportId] = true;
+    setCommentPosting((prev) => ({ ...prev, [reportId]: true }));
 
     try {
       const res = await axios.post(
@@ -155,6 +178,54 @@ export default function Community() {
     } catch (err) {
       console.error("Post comment error:", err);
       setErrorMsg("Couldn't post your comment. Please try again.");
+    } finally {
+      commentPostingRef.current[reportId] = false;
+      setCommentPosting((prev) => ({ ...prev, [reportId]: false }));
+    }
+  };
+
+  const handleDeleteComment = async (reportId, commentId) => {
+    // Block if this comment is already being deleted
+    if (commentDeletingRef.current[commentId]) return;
+
+    const token = getToken();
+    if (!token) {
+      setErrorMsg("Please log in to delete a comment.");
+      return;
+    }
+
+    if (!window.confirm("Delete this comment?")) return;
+
+    commentDeletingRef.current[commentId] = true;
+    setCommentDeleting((prev) => ({ ...prev, [commentId]: true }));
+
+    try {
+      await axios.delete(`${API_BASE}/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setCommentsByReport((prev) => ({
+        ...prev,
+        [reportId]: (prev[reportId] || []).filter((c) => c._id !== commentId),
+      }));
+    } catch (err) {
+      console.error("Delete comment error:", err);
+      if (err.response?.status === 403) {
+        setErrorMsg("You can only delete your own comments.");
+      } else if (err.response?.status === 404) {
+        // Already gone on the server, so remove it from the UI too
+        setCommentsByReport((prev) => ({
+          ...prev,
+          [reportId]: (prev[reportId] || []).filter((c) => c._id !== commentId),
+        }));
+      } else if (err.response?.status === 401) {
+        setErrorMsg("Your session expired. Please log in again.");
+      } else {
+        setErrorMsg("Couldn't delete your comment. Please try again.");
+      }
+    } finally {
+      commentDeletingRef.current[commentId] = false;
+      setCommentDeleting((prev) => ({ ...prev, [commentId]: false }));
     }
   };
 
@@ -288,6 +359,8 @@ export default function Community() {
             const isLiked = currentUser && report.likes?.includes(currentUser._id);
             const commentsOpen = !!openComments[report._id];
             const comments = commentsByReport[report._id] || [];
+            const isPosting = !!commentPosting[report._id];
+            const draft = commentDrafts[report._id] || "";
 
             return (
               <div
@@ -377,14 +450,33 @@ export default function Community() {
                     )}
 
                     <div className="space-y-3 mb-4 max-h-56 overflow-y-auto pr-1">
-                      {comments.map((c) => (
-                        <div key={c._id} className="bg-[#12151f] rounded-lg p-3">
-                          <p className="text-[#e9ecf3] text-sm font-semibold mb-1">
-                            {c.user?.name || "User"}
-                          </p>
-                          <p className="text-[#9aa4ba] text-sm">{c.text}</p>
-                        </div>
-                      ))}
+                      {comments.map((c) => {
+                        const canDelete =
+                          currentUser &&
+                          (c.user?._id === currentUser._id ||
+                            currentUser.role === "admin");
+
+                        return (
+                          <div key={c._id} className="bg-[#12151f] rounded-lg p-3">
+                            <div className="flex items-start justify-between gap-3 mb-1">
+                              <p className="text-[#e9ecf3] text-sm font-semibold">
+                                {c.user?.name || "User"}
+                              </p>
+                              {canDelete && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteComment(report._id, c._id)}
+                                  disabled={!!commentDeleting[c._id]}
+                                  className="text-xs text-[#ef4f4f] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {commentDeleting[c._id] ? "Deleting..." : "Delete"}
+                                </button>
+                              )}
+                            </div>
+                            <p className="text-[#9aa4ba] text-sm break-words">{c.text}</p>
+                          </div>
+                        );
+                      })}
                     </div>
 
                     {currentUser ? (
@@ -396,20 +488,22 @@ export default function Community() {
                           type="text"
                           placeholder="Add a comment..."
                           maxLength={500}
-                          value={commentDrafts[report._id] || ""}
+                          value={draft}
+                          disabled={isPosting}
                           onChange={(e) =>
                             setCommentDrafts((prev) => ({
                               ...prev,
                               [report._id]: e.target.value,
                             }))
                           }
-                          className="flex-1 bg-[#12151f] border border-[#2c3242] rounded-lg px-3 py-2 text-sm text-[#e9ecf3] outline-none focus:border-[#e6a94f]"
+                          className="flex-1 bg-[#12151f] border border-[#2c3242] rounded-lg px-3 py-2 text-sm text-[#e9ecf3] outline-none focus:border-[#e6a94f] disabled:opacity-60"
                         />
                         <button
                           type="submit"
-                          className="px-4 py-2 rounded-lg bg-[#f5a623] text-[#10151f] font-semibold text-sm"
+                          disabled={isPosting || !draft.trim()}
+                          className="px-4 py-2 rounded-lg bg-[#f5a623] text-[#10151f] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          Post
+                          {isPosting ? "Posting..." : "Post"}
                         </button>
                       </form>
                     ) : (

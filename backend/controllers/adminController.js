@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Report = require("../models/Report");
+const notifyReportStatus = require("../utils/notifyReportStatus");
 
 // GET /api/admin/stats
 const getStats = async (req, res) => {
@@ -118,7 +119,7 @@ const updateReportStatus = async (req, res) => {
         const { id } = req.params;
         const { status, reviewNote } = req.body;
 
-        if (!["approved", "review", "pending"].includes(status)) {
+        if (!["approved", "rejected", "under_review", "pending"].includes(status)) {
             return res.status(400).json({ message: "Invalid status specified" });
         }
 
@@ -127,9 +128,16 @@ const updateReportStatus = async (req, res) => {
             return res.status(404).json({ message: "Report not found" });
         }
 
+        const statusChanged = report.status !== status;
+
         report.status = status;
         report.reviewNote = reviewNote || "";
         await report.save();
+
+        // Only notify when the status actually changed
+        if (statusChanged) {
+            await notifyReportStatus(report);
+        }
 
         res.status(200).json({ message: "Report status updated successfully", report });
     } catch (err) {
