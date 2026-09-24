@@ -93,31 +93,40 @@ export default function Admin() {
   };
 
   const handleDeleteUser = async () => {
-    if (!userToDelete) return;
-    setActionLoading(true);
-    try {
-      await axios.delete(
-        `http://localhost:5000/api/admin/users/${userToDelete._id}`,
-        getAuthHeader(),
-      );
-      setUsers((prev) => prev.filter((u) => u._id !== userToDelete._id));
-      showNotification(
-        "success",
-        `User "${userToDelete.name}" has been removed.`,
-      );
-      setUserToDelete(null);
-      // Refresh stats
-      fetchAdminData();
-    } catch (err) {
-      console.error("Delete user error:", err);
-      showNotification(
-        "error",
-        err.response?.data?.message || "Failed to delete user",
-      );
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  if (!userToDelete) return;
+  setActionLoading(true);
+  try {
+    console.log("Starting delete for user:", userToDelete._id);
+    
+    await axios.delete(
+      `http://localhost:5000/api/admin/users/${userToDelete._id}`,
+      getAuthHeader(),
+    );
+    
+    console.log("Delete API call successful");
+    
+    setUsers((prev) => prev.filter((u) => u._id !== userToDelete._id));
+    console.log("Users state updated");
+    
+    showNotification(
+      "success",
+      `User "${userToDelete.name}" has been removed.`,
+    );
+    console.log("Notification shown");
+    
+    setUserToDelete(null);
+    console.log("Modal closed");
+    
+  } catch (err) {
+    console.error("Delete user error:", err);
+    showNotification(
+      "error",
+      err.response?.data?.message || "Failed to delete user",
+    );
+  } finally {
+    setActionLoading(false);
+  }
+};
 
   const handleToggleRole = async (targetUser) => {
     const newRole = targetUser.role === "admin" ? "user" : "admin";
@@ -137,7 +146,6 @@ export default function Admin() {
         "success",
         `Role for "${targetUser.name}" changed to ${newRole.toUpperCase()}.`,
       );
-      fetchAdminData();
     } catch (err) {
       console.error("Update role error:", err);
       showNotification(
