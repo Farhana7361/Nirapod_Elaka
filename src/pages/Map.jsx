@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import L from "leaflet";
 import "leaflet-control-geocoder";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
@@ -14,6 +15,18 @@ export default function Map() {
   const [selectedLng, setSelectedLng] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   let marker = null;
+
+  // approved reports + filters
+  const [reports, setReports] = useState([]);
+  const [timeFilter, setTimeFilter] = useState("All times");
+  const [typeFilter, setTypeFilter] = useState("All types");
+  const reportMarkersLayerRef = useRef(null);
+
+  const getMarkerColor = (avgRating) => {
+    if (avgRating >= 3.5) return "#19dd47"; // safe
+    if (avgRating >= 2.5) return "#ffad19"; // caution
+    return "#ed333d"; // danger
+  };
 
   const getAreaName = async (lat, lng) => {
     try {
@@ -53,6 +66,8 @@ export default function Map() {
       }
     );
     osm.addTo(map);
+
+    reportMarkersLayerRef.current = L.layerGroup().addTo(map);
 
     L.Control.geocoder({
       defaultMarkGeocode: false
@@ -106,6 +121,89 @@ export default function Map() {
 
   }, []);
 
+  // fetch approved reports once on mount
+useEffect(() => {
+  const fetchReports = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        "http://localhost:5000/api/reports/approved",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setReports(res.data);
+    } catch (err) {
+      console.log("Fetch Reports Error:", err.response?.data || err.message);
+    }
+  };
+
+  fetchReports();
+}, []);
+
+// group same-spot reports, average their rating, draw one marker per spot
+useEffect(() => {
+  const layer = reportMarkersLayerRef.current;
+  if (!layer) return;
+
+  layer.clearLayers();
+
+  const filteredReports = reports.filter((r) => {
+    const timeMatches = timeFilter === "All times" || r.time === timeFilter;
+    const typeMatches = typeFilter === "All types" || r.type === typeFilter;
+    return timeMatches && typeMatches;
+  });
+
+  // group reports that are at (roughly) the same spot — ~11m grid
+  const groups = {};
+  filteredReports.forEach((r) => {
+    if (!r.location) return;
+
+    const key = `${r.location.lat.toFixed(4)},${r.location.lng.toFixed(4)}`;
+
+    if (!groups[key]) {
+      groups[key] = [];
+    }
+    groups[key].push(r);
+  });
+
+  Object.values(groups).forEach((group) => {
+    const avgRating =
+      group.reduce((sum, r) => sum + r.rating, 0) / group.length;
+
+    const sortedGroup = [...group].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    const { lat, lng } = sortedGroup[0].location;
+
+    const popupHtml = `
+      <b>${sortedGroup[0].address || "Unknown area"}</b><br/>
+      Average rating: ${avgRating.toFixed(1)}/5 (${group.length} report${
+      group.length > 1 ? "s" : ""
+    })
+      <hr style="margin:6px 0;" />
+      ${sortedGroup
+        .map(
+          (r) =>
+            `<b>${r.type}</b> — ${r.rating}/5 (${r.time})<br/><span style="font-size:12px;color:#9ab5d5;">${new Date(
+              r.createdAt
+            ).toLocaleDateString()}</span>`
+        )
+        .join("<hr style='margin:6px 0;'/>")}
+    `;
+
+    L.circleMarker([lat, lng], {
+      radius: 10,
+      //weight: 2,
+      //color: "#0f151e",
+      stroke: false,
+      fillColor: getMarkerColor(avgRating),
+      fillOpacity: 0.9,
+    })
+      .bindPopup(popupHtml)
+      .addTo(layer);
+  });
+}, [reports, timeFilter, typeFilter]);
+
   return (
     <div id="main">
 
@@ -117,25 +215,35 @@ export default function Map() {
           <h3>Time of day</h3>
 
           <div className="box">
-            <select id="time">
-              <option>All times</option>
-              <option>Morning</option>
-              <option>Afternoon</option>
-              <option>Evening</option>
-              <option>Night</option>
-            </select>
-          </div>
+          <select
+            id="timeFilter"
+            value={timeFilter}
+            onChange={(e) => setTimeFilter(e.target.value)}
+          >
+            <option>All times</option>
+            <option>Morning</option>
+            <option>Afternoon</option>
+            <option>Evening</option>
+            <option>Night</option>
+          </select>
+        </div>
 
-          <h3>Incident Type </h3>
+         <h3>Incident Type </h3>
 
-          <div className="box">
-            <select id="time">
-              <option>Theft</option>
-              <option>Harassment</option>
-              <option>Accident</option>
-              <option>Suspicious Activity</option>
-             </select>
-          </div>
+        <div className="box">
+          <select
+            id="typeFilter"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <option>All types</option>
+            <option>Theft</option>
+            <option>Harassment</option>
+            <option>Accident</option>
+            <option>Suspicious Activity</option>
+            <option>No Incident</option>
+          </select>
+        </div>
 
         </div>
 

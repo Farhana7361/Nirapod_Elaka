@@ -17,10 +17,10 @@ const notificationSchema = new mongoose.Schema(
             ref: "User", // Who liked or commented
         },
         type: {
-            type: String,
-            enum: ["approved", "rejected", "under_review", "comment", "like"],
-            required: true,
-        },
+           type: String,
+           enum: ["approved", "rejected", "under_review"],
+           required: true,
+      },
         message: {
             type: String,
             required: true,

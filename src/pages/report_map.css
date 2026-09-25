@@ -350,3 +350,9 @@
     cursor: not-allowed;
 
 }
+
+@media (max-width: 480px) {
+  .report-map {
+    width: 90vw;
+  }
+}
