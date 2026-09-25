@@ -172,9 +172,18 @@ export default function Admin() {
 
   const handleUpdateReportStatus = async (id, status) => {
     try {
+      let reviewNote = "";
+      if (status === "review") {
+        const inputNote = window.prompt(
+          "Enter feedback / reason for review (optional, visible to the user):",
+          ""
+        );
+        if (inputNote === null) return; 
+        reviewNote = inputNote.trim();
+      }
       const res = await axios.put(
         `http://localhost:5000/api/admin/reports/${id}/status`,
-        { status },
+        { status, reviewNote },
         getAuthHeader(),
       );
 

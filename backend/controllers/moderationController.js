@@ -1,6 +1,6 @@
 const Report = require("../models/Report");
 const Flag = require("../models/Flag");
-const notifyReportStatus = require("../utils/notifyReportStatus");
+const { notifyReportStatus } = require("../utils/notifyReportStatus");
 const Notification = require("../models/Notification");
 
 // GET /api/moderation/reports/pending

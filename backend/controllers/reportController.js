@@ -1,6 +1,6 @@
 const Report = require("../models/Report");
 const Comment = require("../models/Comment");
-
+const { notifyAdminsReportReview } = require("../utils/notifyReportStatus");
 // POST /api/reports
 const createReport = async (req, res) => {
     try {
@@ -23,7 +23,7 @@ const createReport = async (req, res) => {
             time,
             reportedBy: req.user._id,
         });
-
+        await notifyAdminsReportReview(report, "new");
         res.status(201).json(report);
     } catch (err) {
         console.log("Create Report Error:", err);
@@ -82,6 +82,7 @@ const updateMyReport = async (req, res) => {
         report.reviewNote = "";
 
         await report.save();
+        await notifyAdminsReportReview(report, "new");
 
         res.status(200).json(report);
     } catch (err) {

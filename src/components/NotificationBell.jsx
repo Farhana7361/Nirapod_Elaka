@@ -18,6 +18,7 @@ function timeAgo(dateString) {
 function typeColor(type) {
   if (type === "approved") return "#3ecf8e";
   if (type === "rejected") return "#ef4f4f";
+  if (type === "new_report" || type === "pending") return "#38bdf8";
   return "#f5a623";
 }
 
@@ -51,8 +52,13 @@ export default function NotificationBell() {
   // Load on mount, then poll every 30 seconds
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchNotifications, 10000);
+    const onFocus = () => fetchNotifications();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+    };
   }, [fetchNotifications]);
 
   // Close the dropdown when clicking outside of it
@@ -111,7 +117,7 @@ export default function NotificationBell() {
       <button
         onClick={() => {
           setOpen((prev) => !prev);
-          if (!open) fetchNotifications();
+        fetchNotifications();
         }}
         className="relative p-2 rounded-lg text-[#e9ecf3] hover:bg-[#1f2838] transition"
         aria-label="Notifications"

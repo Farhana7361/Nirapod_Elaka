@@ -6,8 +6,10 @@ import axios from "axios";
 function getStatus(status) {
   if (status === "approved") {
     return { label: "Resolved", cls: "resolved" };
-  } else if (status === "review") {
+  } else if (status === "review" || status === "under_review") {
     return { label: "Under review", cls: "review" };
+  } else if (status === "rejected") {
+    return { label: "Rejected", cls: "rejected" };
   } else {
     return { label: "Pending review", cls: "pending" };
   }
@@ -86,6 +88,70 @@ export default function Profile() {
     };
     fetchMyReports();
   }, [navigate]);
+
+  const [editingReport, setEditingReport] = useState(null);
+  const [editForm, setEditForm] = useState({
+    type: "",
+    description: "",
+    address: "",
+    rating: 0,
+    time: "Morning",
+  });
+  const [editStatus, setEditStatus] = useState({ type: "", message: "" });
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+
+  const handleEditClick = (report) => {
+    setEditingReport(report);
+    setEditForm({
+      type: report.type,
+      description: report.description,
+      address: report.address,
+      rating: report.rating,
+      time: report.time,
+    });
+    setEditStatus({ type: "", message: "" });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+
+    if (editForm.description.trim().length < 20) {
+      setEditStatus({
+        type: "error",
+        message: "Description must be at least 20 characters.",
+      });
+      return;
+    }
+
+    setIsSavingEdit(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.put(
+        `http://localhost:5000/api/reports/${editingReport._id}`,
+        {
+          type: editForm.type,
+          description: editForm.description,
+          address: editForm.address,
+          rating: editForm.rating,
+          time: editForm.time,
+        },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      // clears reviewNote
+      setReports((prev) =>
+        prev.map((r) => (r._id === editingReport._id ? res.data : r)),
+      );
+      setEditingReport(null);
+    } catch (err) {
+      setEditStatus({
+        type: "error",
+        message: err.response?.data?.message || "Failed to update report.",
+      });
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
 
   // derived stats
   const totalReports = reports.length;
@@ -236,7 +302,7 @@ margin: 0 0 0 75px;
 }
 .id-card {
   position: relative;
-  background: linear-gradient(160deg, var(--forest-deep) 0%, var(--forest) 78%);
+  background: linear-gradient(var(--forest-deep) 0%, var(--forest) 78%);
   border-radius: var(--radius);
   padding: 30px 20px 24px;
   overflow: hidden;
@@ -529,6 +595,51 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
   cursor: default;
 } 
   
+
+.report-edit-btn {
+  background: rgba(245, 166, 35, 0.12);
+  color: #f5a623;
+  border: 1px solid #f5a623;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.edit-modal-box {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+}
+.edit-modal-box label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 12px 0 6px;
+}
+.edit-modal-box input,
+.edit-modal-box select,
+.edit-modal-box textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
   
   /*    
 
@@ -707,6 +818,16 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
                             <span className={`pill ${status.cls}`}>
                               {status.label}
                             </span>
+
+                            {r.status === "review" && (
+                              <button
+                                onClick={() => handleEditClick(r)}
+                                className="report-edit-btn"
+                              >
+                                Edit
+                              </button>
+                            )}
+
                             <button
                               onClick={() => handleDeleteReport(r._id)}
                               disabled={deletingId === r._id}
@@ -716,6 +837,18 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
                             </button>
                           </div>
                         </div>
+
+                        {r.status === "review" && r.reviewNote && (
+                          <p
+                            style={{
+                              color: "#f5a623",
+                              fontSize: "12px",
+                              marginTop: "4px",
+                            }}
+                          >
+                            Admin feedback: {r.reviewNote}
+                          </p>
+                        )}
 
                         <div className="report-meta">
                           <span className="report-id">
@@ -733,6 +866,103 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
           </div>
         </div>
       </div>
+
+      {editingReport && (
+        <div className="edit-modal-overlay">
+          <div className="edit-modal-box">
+            <h3>Edit & Resubmit Report</h3>
+
+            <form onSubmit={handleEditSubmit}>
+              <label>Incident Type</label>
+              <select
+                value={editForm.type}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, type: e.target.value })
+                }
+              >
+                <option value="Theft">Theft</option>
+                <option value="Harassment">Harassment</option>
+                <option value="Accident">Accident</option>
+                <option value="Suspicious Activity">Suspicious Activity</option>
+              </select>
+
+              <label>Time of Day</label>
+              <select
+                value={editForm.time}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, time: e.target.value })
+                }
+              >
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+                <option value="Night">Night</option>
+              </select>
+
+              <label>Address</label>
+              <input
+                value={editForm.address}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, address: e.target.value })
+                }
+              />
+
+              <label>Rating: {editForm.rating}</label>
+              <input
+                type="range"
+                min="0"
+                max="5"
+                value={editForm.rating}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, rating: Number(e.target.value) })
+                }
+              />
+
+              <label>Description</label>
+              <textarea
+                value={editForm.description}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, description: e.target.value })
+                }
+              />
+              <p
+                style={{
+                  fontSize: "12px",
+                  color:
+                    editForm.description.trim().length >= 20
+                      ? "#3ecf8e"
+                      : "#ef4f4f",
+                }}
+              >
+                {editForm.description.trim().length} / 20 characters minimum
+              </p>
+
+              {editStatus.message && (
+                <p style={{ color: "#ef4f4f", fontSize: "13px" }}>
+                  {editStatus.message}
+                </p>
+              )}
+
+              <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  className="btn-primary1"
+                >
+                  {isSavingEdit ? "Saving..." : "Save & Resubmit"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingReport(null)}
+                  className="btn-ghost1"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
