@@ -105,8 +105,7 @@ export default function ReportMap({ onClose, latitude, longitude, onSuccess, add
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-          >
-
+          > 
             <option value="Theft">Theft</option>
 
             <option value="Harassment">Harassment</option>
@@ -116,6 +115,8 @@ export default function ReportMap({ onClose, latitude, longitude, onSuccess, add
             <option value="Suspicious Activity">
               Suspicious Activity
             </option>
+
+            <option value="No Incident">No Incident</option>
 
           </select>
 
