@@ -12,11 +12,15 @@ const notificationSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Report",
         },
+        triggeredBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User", // Who liked or commented
+        },
         type: {
-           type: String,
-           enum: ["approved", "rejected", "under_review"],
-           required: true,
-      },
+            type: String,
+            enum: ["approved", "rejected", "under_review", "comment", "like"],
+            required: true,
+        },
         message: {
             type: String,
             required: true,
