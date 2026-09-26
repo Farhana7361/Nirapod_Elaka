@@ -14,6 +14,7 @@ export default function Map() {
   const [selectedLng, setSelectedLng] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const markerRef = useRef(null);
+  const mapInstanceRef = useRef(null);
 
   // approved reports + filters
   const [reports, setReports] = useState([]);
@@ -53,8 +54,25 @@ export default function Map() {
     }
   };
 
+  const dropReportPin = (lat, lng) => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    setSelectedLat(lat);
+    setSelectedLng(lng);
+    getAreaName(lat, lng);
+
+    if (markerRef.current) {
+      map.removeLayer(markerRef.current);
+    }
+
+    markerRef.current = L.marker([lat, lng]).addTo(map);
+    setShowReportButton(true);
+  };
+
   useEffect(() => {
     var map = L.map("map").setView([23.8103, 90.4125], 13);
+    mapInstanceRef.current = map;
 
     var osm = L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -71,38 +89,14 @@ export default function Map() {
       defaultMarkGeocode: false,
     })
       .on("markgeocode", function (e) {
-        setSelectedLat(e.geocode.center.lat);
-        setSelectedLng(e.geocode.center.lng);
-
-        if (markerRef.current) {
-          map.removeLayer(markerRef.current);
-        }
         map.setView([e.geocode.center.lat, e.geocode.center.lng], 18);
-
-        markerRef.current = L.marker([
-          e.geocode.center.lat,
-          e.geocode.center.lng,
-        ]).addTo(map);
+        dropReportPin(e.geocode.center.lat, e.geocode.center.lng);
       })
       .addTo(map);
 
     map.on("click", function (e) {
-      const lat = e.latlng.lat;
-      const lng = e.latlng.lng;
-
-      setSelectedLat(lat);
-      setSelectedLng(lng);
-
-      getAreaName(lat, lng);
-
-      if (markerRef.current) {
-        map.removeLayer(markerRef.current);
-      }
-
-      markerRef.current = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
-      setShowReportButton(true);
+      dropReportPin(e.latlng.lat, e.latlng.lng);
     });
-
     return () => {
       map.remove();
     };
@@ -164,30 +158,49 @@ export default function Map() {
 
       const popupHtml = `
       <b>${sortedGroup[0].address || "Unknown area"}</b><br/>
-      Average rating: ${avgRating.toFixed(1)}/5 (${group.length} report${
-        group.length > 1 ? "s" : ""
-      })
+      Average rating: ${avgRating.toFixed(1)}/5 (${group.length} report${group.length > 1 ? "s" : ""
+        })
       <hr style="margin:6px 0;" />
       ${sortedGroup
-        .map(
-          (r) =>
-            `<b>${r.type}</b> — ${r.rating}/5 (${r.time})<br/><span style="font-size:12px;color:#9ab5d5;">${new Date(
-              r.createdAt,
-            ).toLocaleDateString()}</span>`,
-        )
-        .join("<hr style='margin:6px 0;'/>")}
+          .map(
+            (r) =>
+              `<b>${r.type}</b> — ${r.rating}/5 (${r.time})<br/><span style="font-size:12px;color:#9ab5d5;">${new Date(
+                r.createdAt,
+              ).toLocaleDateString()}</span>`,
+          )
+          .join("<hr style='margin:6px 0;'/>")}
     `;
 
-      L.circleMarker([lat, lng], {
+            const circle = L.circleMarker([lat, lng], {
         radius: 10,
-        //weight: 2,
-        //color: "#0f151e",
         stroke: false,
         fillColor: getMarkerColor(avgRating),
         fillOpacity: 0.9,
-      })
-        .bindPopup(popupHtml)
-        .addTo(layer);
+      });
+
+      let hoverPopup = null;
+
+      circle.on("mouseover", (e) => {
+        hoverPopup = L.popup({ closeButton: false, autoClose: true })
+          .setLatLng(e.latlng)
+          .setContent(popupHtml)
+          .openOn(mapInstanceRef.current);
+      });
+
+      circle.on("mouseout", () => {
+        if (hoverPopup) {
+          mapInstanceRef.current.closePopup(hoverPopup);
+        }
+      });
+
+      circle.on("click", (e) => {
+        if (hoverPopup) {
+          mapInstanceRef.current.closePopup(hoverPopup);
+        }
+        dropReportPin(e.latlng.lat, e.latlng.lng);
+      });
+
+      circle.addTo(layer);
     });
   }, [reports, timeFilter, typeFilter]);
 
