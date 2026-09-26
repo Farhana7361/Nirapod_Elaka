@@ -308,14 +308,14 @@ body {
 
 .id-card {
   position: relative;
-  background: linear-gradient(var(--forest-deep) 0%, var(--forest) 78%);
+  background: var(--panel);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 30px 20px 24px;
   overflow: hidden;
   isolation: isolate;
   position: sticky;
   top: calc(var(--nav-h) + 16px);
-  
 }
 .id-avatar {
   width: 70px;
@@ -325,13 +325,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.12);
-  border: 4px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  border: 3px solid rgba(255, 255, 255, 0.18);
   color: #fbfaf6;
   font-family: "Tiro Bangla", serif;
   font-size: 30px;
   font-weight: 600;
-  
 }
 
 .id-name {
@@ -353,9 +352,9 @@ body {
 .id-badge {
   margin: 16px auto 0;
   width: fit-content;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #eaf3ec;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  color: #f5a623;
   font-size: 11.5px;
   padding: 6px 14px;
   border-radius: 999px;
@@ -364,11 +363,9 @@ body {
   gap: 7px;
 }
 
-
-
 .id-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--line);
   margin: 20px 0;
 }
 
@@ -378,10 +375,10 @@ body {
   }
     .id-stat{
     display:flex; align-items:center; justify-content:space-between;
-    font-size:12.5px;
+    font-size:13px;
   }
-.id-stat .k{ color:rgba(255,255,255,.6); font-family:'Inter', sans-serif; }
-  .id-stat .v{ color:#F6F5F0; font-family:'IBM Plex Mono', monospace; font-size:12.5px; }
+  .id-stat .k{ color:rgba(255,255,255,.8); font-family:'Inter', sans-serif; font-weight:600; }
+  .id-stat .v{ color:#F6F5F0; font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; }
 
   .main-col{
     display:flex; flex-direction:column; gap:18px;
@@ -460,19 +457,19 @@ body {
   .btn-change1{
     font-family:'Inter', sans-serif;
     font-size:12.5px; font-weight:600;
-   color:#FFFFFF;
-    background:var(--sage-tint);
-    border:1px solid var(--line);
+    color:rgba(245, 166, 35, 0.85);
+    background:rgba(245, 166, 35, 0.08);
+    border:1px solid rgba(245, 166, 35, 0.2);
     padding:8px 14px;
     border-radius:9px;
     cursor:pointer;
     white-space:nowrap;
-    transition:background .15s ease, transform .1s ease;
+    transition:background .15s ease, color .15s ease, transform .1s ease, border-color .15s ease;
   }  
   
-  .btn-change1:hover{ background:#DCEAE1;color: #000000; }
-    .btn-change:active{ transform:scale(.97); }
-    .btn-change:focus-visible{ outline:2px solid var(--forest); outline-offset:2px; }
+  .btn-change1:hover{ background:rgba(245, 166, 35, 0.2); color:#f5a623; border-color:rgba(245, 166, 35, 0.4); }
+  .btn-change1:active{ transform:scale(.97); }
+  .btn-change1:focus-visible{ outline:2px solid rgba(245, 166, 35, 0.5); outline-offset:2px; }
 
   /* ---------- Change-password reveal ---------- */
   .pw-panel{
@@ -501,20 +498,28 @@ body {
     background:var(--bg);
     color:var(--ink);
   }
-  .pw-panel input:focus-visible{ outline:2px solid var(--forest); outline-offset:1px; }
+  .pw-panel input:focus-visible{ outline:2px solid rgba(245, 166, 35, 0.6); outline-offset:1px; }
   .pw-actions{ display:flex; gap:10px; margin-top:12px; grid-column:1 / -1; }
 
-    .btn-primary1{
+  .btn-primary1{
     flex:0 0 auto;
-    background:var(--forest-deep);
-    color:#FFFFFF;
-    border:none;
+    background:rgba(245, 166, 35, 0.08);
+    color:rgba(245, 166, 35, 0.85);
+    border:1px solid rgba(245, 166, 35, 0.2);
     padding:11px 18px;
     border-radius:9px;
     font-family:'Inter', sans-serif; font-weight:600; font-size:13.5px;
     cursor:pointer;
+    transition:background .15s ease, color .15s ease, transform .1s ease, border-color .15s ease;
   }
-  .btn-primary1:hover{ background:var(--forest); }
+  .btn-primary1:hover{
+    background:rgba(245, 166, 35, 0.2);
+    color:#f5a623;
+    border-color:rgba(245, 166, 35, 0.4);
+  }
+  .btn-primary1:active{ transform:scale(.97); }
+  .btn-primary1:focus-visible{ outline:2px solid rgba(245, 166, 35, 0.5); outline-offset:2px; }
+  .btn-primary1:disabled{ opacity:0.5; cursor:not-allowed; }
   .btn-ghost1{
     background:transparent;
     color:#FFFFFF;
@@ -547,14 +552,14 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
 }
   .report{
     border:1px solid var(--line);
-    border-left:3px solid var(--gold);
+    border-left:3px solid #b8860b;
     border-radius:11px;
     padding:13px 14px;
     display:flex; flex-direction:column; gap:6px;
     background:#FCFBF8;
   }
 
-
+  .report.review{ border-left-color:#b8860b; }
   .report.resolved{ border-left-color:#3F8F5F; }
   .report.pending{ border-left-color:#9AA79E; }
   .report-top{
@@ -571,9 +576,30 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
     padding:4px 9px; border-radius:999px;
     white-space:nowrap; flex-shrink:0;
   }
-  .pill.review{ background:var(--gold-tint); color:#7A5620; }
-  .pill.resolved{ background:#E1F0E5; color:#2B6B44; }  
-  .pill.pending{ background:#EDEEEB; color:#5B655F; }
+  .pill.review{
+    background: rgba(184, 134, 11, 0.08);
+    color: #b8860b;
+    border: 1px solid rgba(184, 134, 11, 0.45);
+    font-weight: 600;
+  }
+  .pill.resolved{
+    background: rgba(43, 107, 68, 0.08);
+    color: #2B6B44;
+    border: 1px solid rgba(43, 107, 68, 0.45);
+    font-weight: 600;
+  }  
+  .pill.pending{
+    background: rgba(91, 101, 95, 0.08);
+    color: #5B655F;
+    border: 1px solid rgba(91, 101, 95, 0.45);
+    font-weight: 600;
+  }
+  .pill.rejected{
+    background: rgba(239, 79, 79, 0.08);
+    color: #ef4f4f;
+    border: 1px solid rgba(239, 79, 79, 0.45);
+    font-weight: 600;
+  }
   .report-meta{
     font-size:12px; color:#000000;
     display:flex; gap:14px; flex-wrap:wrap;
@@ -603,13 +629,23 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
   
 
 .report-edit-btn {
-  background: rgba(245, 166, 35, 0.12);
-  color: #f5a623;
-  border: 1px solid #f5a623;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .04em;
+  font-weight: 600;
+  background: rgba(184, 134, 11, 0.08);
+  color: #b8860b;
+  border: 1px solid rgba(184, 134, 11, 0.45);
+  padding: 4px 9px;
+  border-radius: 999px;
   cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.report-edit-btn:hover {
+  background: rgba(184, 134, 11, 0.2);
+  border-color: rgba(184, 134, 11, 0.7);
 }
 .edit-modal-overlay {
   padding: 16px;
@@ -851,8 +887,9 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
                         {r.status === "review" && r.reviewNote && (
                           <p
                             style={{
-                              color: "#f5a623",
+                              color: "#b8860b",
                               fontSize: "12px",
+                              fontWeight: "600",
                               marginTop: "4px",
                             }}
                           >
