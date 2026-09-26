@@ -285,10 +285,11 @@ body {
 .page {
   width: 100%;
   max-width: 1100px;
-margin: 0 0 0 75px;
-
- 
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
+
 .layout {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -298,8 +299,13 @@ margin: 0 0 0 75px;
 @media (max-width: 760px) {
   .layout {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .id-card {
+    position: static;
   }
 }
+
 .id-card {
   position: relative;
   background: linear-gradient(var(--forest-deep) 0%, var(--forest) 78%);
@@ -477,7 +483,7 @@ margin: 0 0 0 75px;
   .pw-panel.open{ display:block; }
   .pw-panel-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
   
-  @media (max-width:640px){
+  @media (max-width:760px){
     .pw-panel-grid{ grid-template-columns:1fr; }
   }
   .pw-panel label{
@@ -606,6 +612,7 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
   cursor: pointer;
 }
 .edit-modal-overlay {
+padding: 16px
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.7);
@@ -621,6 +628,8 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
   padding: 24px;
   width: 100%;
   max-width: 420px;
+  max-height: 90vh; 
+  overflow-y: auto;
 }
 .edit-modal-box label {
   display: block;
@@ -819,7 +828,8 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
                               {status.label}
                             </span>
 
-                            {r.status === "review" && (
+                            {(r.status === "review" ||
+                              r.status === "under_review") && (
                               <button
                                 onClick={() => handleEditClick(r)}
                                 className="report-edit-btn"
