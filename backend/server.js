@@ -73,17 +73,17 @@ if (process.env.MONGO_URI) {
 }
 
 // Serve Frontend Static Files
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(path.resolve(__dirname, "../dist")));
 
 // Catch-all route using regex syntax
 app.get("(.*)", (req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ error: "API route not found" });
   }
-  const indexPath = path.join(__dirname, "dist", "index.html");
+  const indexPath = path.resolve(__dirname, "../dist", "index.html");
   res.sendFile(indexPath, (err) => {
     if (err) {
-      res.send("Nirapod Elaka Server Running");
+      res.status(200).send("Nirapod Elaka Server Running");
     }
   });
 });
