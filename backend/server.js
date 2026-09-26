@@ -75,12 +75,11 @@ if (process.env.MONGO_URI) {
 // Serve Frontend Static Files
 app.use(express.static(path.join(__dirname, "dist")));
 
-app.get("*", (req, res) => {
-  // If API route not found, return JSON error
+// Catch-all route using regex syntax
+app.get("(.*)", (req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ error: "API route not found" });
   }
-  // Serve Vite frontend build
   const indexPath = path.join(__dirname, "dist", "index.html");
   res.sendFile(indexPath, (err) => {
     if (err) {
