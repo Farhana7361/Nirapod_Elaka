@@ -75,8 +75,8 @@ if (process.env.MONGO_URI) {
 // Serve Frontend Static Files
 app.use(express.static(path.resolve(__dirname, "../dist")));
 
-// Catch-all route using regex syntax
-app.get("(.*)", (req, res) => {
+// Catch-all route using regex literal (prevents path-to-regexp errors)
+app.get(/.*$/, (req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ error: "API route not found" });
   }
