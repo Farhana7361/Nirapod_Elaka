@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { NavLink } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 
 const API_BASE = "http://localhost:5000/api";

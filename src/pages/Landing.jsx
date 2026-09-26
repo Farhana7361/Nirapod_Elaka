@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { MapPin, Edit3, SlidersHorizontal, ChartNoAxesColumn, BadgeCheck, User } from 'lucide-react';
 import './Landing.css';
 

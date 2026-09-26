@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Landing from './pages/Landing.jsx';
 import Map from './pages/Map.jsx';
@@ -12,7 +12,6 @@ import Admin from "./pages/Admin.jsx";
 import CarbonFootprintDisplay from "./components/CarbonFootprintDisplay.jsx";
 export default function App() {
   return (
-    <BrowserRouter>
       <div className="app-shell">
         <Navbar />
 
@@ -30,6 +29,5 @@ export default function App() {
         <Footer />
         <CarbonFootprintDisplay />
       </div>
-    </BrowserRouter>
   );
 }

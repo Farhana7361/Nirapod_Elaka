@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { User, Lock, MapPin, Check, CircleCheck } from "lucide-react";
 import "../styles/Signup.css";
 import axios from "axios";
