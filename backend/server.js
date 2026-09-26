@@ -1,12 +1,9 @@
-const dns = require('dns');
-// Set DNS servers 
-dns.setServers(['8.8.8.8', '8.8.4.4']);
-
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const { co2 } = require('@tgwf/co2');
+const path = require("path");
+const { co2 } = require("@tgwf/co2");
 
 dotenv.config();
 
@@ -17,54 +14,49 @@ app.use(cors());
 app.use(express.json());
 
 // ---- Carbon Footprint Tracking Middleware ----
-// Initialize CO2.js with the Sustainable Web Design model
-const co2Emission = new co2({ model: 'swd' });
+const co2Emission = new co2({ model: "swd" });
 
-// Middleware to calculate data transfer size
 app.use((req, res, next) => {
   let requestBytes = 0;
   let responseBytes = 0;
 
-  // Calculate request size
   if (req.body) {
-    requestBytes = Buffer.byteLength(JSON.stringify(req.body), 'utf8');
+    requestBytes = Buffer.byteLength(JSON.stringify(req.body), "utf8");
   }
   if (req.query) {
-    requestBytes += Buffer.byteLength(JSON.stringify(req.query), 'utf8');
+    requestBytes += Buffer.byteLength(JSON.stringify(req.query), "utf8");
   }
   if (req.headers) {
-    requestBytes += Buffer.byteLength(JSON.stringify(req.headers), 'utf8');
+    requestBytes += Buffer.byteLength(JSON.stringify(req.headers), "utf8");
   }
 
-  // Override res.write to calculate response size
   const originalWrite = res.write;
   const originalEnd = res.end;
 
   res.write = function (chunk) {
     if (chunk) {
-      responseBytes += Buffer.byteLength(chunk, 'utf8');
+      responseBytes += Buffer.byteLength(chunk, "utf8");
     }
-    originalWrite.apply(res, arguments);
+    return originalWrite.apply(res, arguments);
   };
 
   res.end = function (chunk) {
     if (chunk) {
-      responseBytes += Buffer.byteLength(chunk, 'utf8');
+      responseBytes += Buffer.byteLength(chunk, "utf8");
     }
-    // Store total bytes
     res.locals.totalBytes = requestBytes + responseBytes;
-    // Calculate carbon emissions
-    const greenHost = false; // Set to true if your server is hosted on a green host
+    const greenHost = false;
     const emissions = co2Emission.perByte(res.locals.totalBytes, greenHost);
     console.log(`Data transferred: ${res.locals.totalBytes} bytes`);
     console.log(`Estimated CO2 emissions: ${emissions.toFixed(3)} grams`);
-    originalEnd.apply(res, arguments);
+    return originalEnd.apply(res, arguments);
   };
 
   next();
 });
 // ---- End Carbon Footprint Tracking Middleware ----
 
+// API Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/moderation", require("./routes/moderationRoutes"));
@@ -73,23 +65,35 @@ app.use("/api/comments", require("./routes/commentRoutes"));
 app.use("/api/notifications", require("./routes/notificationRoutes"));
 
 // Database Connection
-mongoose
-  .connect(process.env.MONGO_URI, { family: 4 })
-  .then(() => {
-    console.log("MongoDB Connected");
-  })
-  .catch((err) => {
-    console.log("MongoDB Connection Error:", err);
+if (process.env.MONGO_URI) {
+  mongoose
+    .connect(process.env.MONGO_URI, { family: 4 })
+    .then(() => console.log("MongoDB Connected"))
+    .catch((err) => console.log("MongoDB Connection Error:", err));
+}
+
+// Serve Frontend Static Files
+app.use(express.static(path.join(__dirname, "dist")));
+
+app.get("*", (req, res) => {
+  // If API route not found, return JSON error
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ error: "API route not found" });
+  }
+  // Serve Vite frontend build
+  const indexPath = path.join(__dirname, "dist", "index.html");
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      res.send("Nirapod Elaka Server Running");
+    }
   });
-
-// Routes
-app.get("/", (req, res) => {
-  res.send("Nirapod Elaka Server Running");
 });
 
-// Start Server
-const PORT = process.env.PORT || 5000;
+// Start Server locally
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Export for Vercel Serverless
+module.exports = app;
