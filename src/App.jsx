@@ -9,7 +9,7 @@ import Profile from './pages/Profile.jsx';
 import Footer from './components/Footer.jsx';
 import ForgotPassword from "./pages/ForgotPassword"; 
 import Admin from "./pages/Admin.jsx"; 
-
+import CarbonFootprintDisplay from "./components/CarbonFootprintDisplay.jsx";
 export default function App() {
   return (
     <BrowserRouter>
@@ -28,6 +28,7 @@ export default function App() {
         </Routes>
 
         <Footer />
+        <CarbonFootprintDisplay />
       </div>
     </BrowserRouter>
   );
