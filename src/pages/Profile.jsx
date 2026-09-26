@@ -612,7 +612,7 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
   cursor: pointer;
 }
 .edit-modal-overlay {
-padding: 16px
+  padding: 16px;
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.7);
