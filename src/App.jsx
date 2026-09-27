@@ -27,7 +27,7 @@ export default function App() {
         </Routes>
 
         <Footer />
-        <CarbonFootprintDisplay />
+       {/* <CarbonFootprintDisplay />   */}
       </div>
   );
 }
