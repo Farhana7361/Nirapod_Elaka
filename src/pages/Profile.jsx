@@ -746,7 +746,6 @@ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px;
               {user?.name?.charAt(0).toUpperCase() || "?"}
             </div>
             <p className="id-name">{user?.name || "Loading..."}</p>
-            <p className="id-sub">MEMBER SINCE MAR 2023 · DHAKA</p>
             <div className="id-badge">
               <Shield size={14} />
               Resident safety profile
